@@ -1,125 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dilshan All In One - Utility Toolbox</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            margin-top: 10px;
-        }
-        header h1 {
-            color: #075e54;
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-        }
-        header p {
-            color: #666;
-            font-size: 1rem;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .tool-card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        .tool-card:hover {
-            transform: translateY(-3px);
-        }
-        .tool-card h2 {
-            font-size: 1.3rem;
-            color: #128c7e;
-            margin-bottom: 10px;
-        }
-        .tool-card p {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-success {
-            background-color: #25d366;
-            color: white;
-        }
-        .btn-success:hover {
-            background-color: #1ebd56;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>TikTok Downloader - Dilshan All In One</title>
+
+  <!-- Logo / Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0b0e14;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #121824;
+      border: 1px solid #1f293d;
+      border-radius: 16px;
+      padding: 25px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    
+    /* Login Lock Screen */
+    #lock-screen {
+      text-align: center;
+    }
+    .input-wrapper {
+      position: relative;
+      margin: 15px 0;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #2a364f;
+      background: #0b0e14;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+    .show-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #00c6ff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #8a99ad;
+      cursor: pointer;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    /* Main Content */
+    #main-content {
+      display: none;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .top-logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #00c6ff;
+    }
+    .mini-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .install-btn {
+      padding: 6px 12px;
+      background: #1f293d;
+      border: 1px solid #00c6ff;
+      color: #00c6ff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .logout-btn {
+      padding: 6px 12px;
+      background: #1f293d;
+      border: 1px solid #ff4d4d;
+      color: #ff4d4d;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* Main Logo */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .main-logo-box {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #1f293d;
+      border-radius: 16px;
+      background: #0b0e14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .main-logo-box img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    h2.title {
+      text-align: center;
+      color: #00c6ff;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: #8a99ad;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    /* Video Preview & Download Options */
+    #result-section {
+      display: none;
+      margin-top: 20px;
+      border-top: 1px solid #1f293d;
+      padding-top: 15px;
+    }
+    .video-preview {
+      width: 100%;
+      border-radius: 10px;
+      max-height: 350px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .video-desc {
+      font-size: 13px;
+      color: #d1d5db;
+      margin-bottom: 15px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .quality-title {
+      font-size: 13px;
+      color: #8a99ad;
+      margin-bottom: 10px;
+    }
+
+    .dl-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .btn-1080 { background: #22c55e; }
+    .btn-1080:hover { background: #16a34a; }
+
+    .btn-720 { background: #3b82f6; }
+    .btn-720:hover { background: #2563eb; }
+
+    .btn-watermark { background: #f97316; }
+    .btn-watermark:hover { background: #ea580c; }
+
+    .btn-audio { background: #a855f7; }
+    .btn-audio:hover { background: #9333ea; }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #5a6b82;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Dilshan All In One</h1>
-        <p>Your ultimate utility toolbox in one place</p>
-    </header>
-
-    <div class="container">
-        
-        <!-- WhatsApp Unban Tool -->
-        <div class="tool-card">
-            <h2>WhatsApp Unban Tool</h2>
-            <p>Generate professional appeal emails and contact WhatsApp support instantly.</p>
-            <a href="/whatsapp-unban.html" class="btn btn-success">Open Tool</a>
-        </div>
-
-        <!-- QR Code Generator -->
-        <div class="tool-card">
-            <h2>QR Code Generator</h2>
-            <p>Generate custom QR codes easily for links and text.</p>
-            <a href="/qr-generator.html" class="btn btn-success">Open Tool</a>
-        </div>
-
-        <!-- Password Generator -->
-        <div class="tool-card">
-            <h2>Password Generator</h2>
-            <p>Create secure and strong random passwords.</p>
-            <a href="/password-generator.html" class="btn btn-success">Open Tool</a>
-        </div>
-
-        <!-- TikTok Downloader -->
-        <div class="tool-card">
-            <h2>TikTok Downloader</h2>
-            <p>Download TikTok videos without watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn btn-success">Open Tool</a>
-        </div>
-
+<div class="card">
+  
+  <!-- Lock Screen Section -->
+  <div id="lock-screen">
+    <div style="font-size: 35px; margin-bottom: 5px;">🔒</div>
+    <h2 style="color: #00c6ff; font-size: 1.3rem;">Private Downloader</h2>
+    <p style="color: #8a99ad; font-size: 13px; margin-top: 5px;">Please enter password to access</p>
+    
+    <div class="input-wrapper">
+      <input type="password" id="pass-input" class="input-field" placeholder="Enter Password">
+      <button class="show-btn" onclick="togglePasswordVisibility()">Show</button>
     </div>
+
+    <label class="checkbox-container">
+      <input type="checkbox" id="remember-me"> Remember Password
+    </label>
+
+    <button class="btn" onclick="checkPassword()">Unlock</button>
+    <p id="error-msg" style="color: #ff4d4d; font-size: 13px; margin-top: 10px; display: none;">Invalid Password!</p>
+  </div>
+
+  <!-- Main Website Section -->
+  <div id="main-content">
+    <div class="header">
+      <div class="top-logo-area">
+        <img src="/logo.png" alt="Logo" class="mini-logo">
+        <span>TikTok DL</span>
+      </div>
+      <div style="display: flex; gap: 6px;">
+        <button class="install-btn" id="installBtn" style="display: none;" onclick="installApp()">📲 Install App</button>
+        <button class="logout-btn" onclick="logout()">🔒 Logout</button>
+      </div>
+    </div>
+
+    <!-- Main Logo Box -->
+    <div class="logo-container">
+      <div class="main-logo-box">
+        <img src="/logo.png" alt="Main Logo">
+      </div>
+    </div>
+
+    <h2 class="title">TIKTOK DOWNLOADER</h2>
+    <p class="subtitle">Download TikTok Videos in 1080p, 720p & MP3<br>Without Watermark</p>
+
+    <!-- Input Section -->
+    <input type="text" id="tiktok-url" class="input-field" placeholder="Paste TikTok Link Here...">
+    <button class="btn" onclick="downloadTikTok()" style="margin-top: 5px;">Download Now</button>
+
+    <!-- Results Section -->
+    <div id="result-section">
+      <video id="vid-preview" class="video-preview" controls></video>
+      <p id="vid-desc" class="video-desc"></p>
+      <p class="quality-title">Select Quality to Download:</p>
+
+      <a id="dl-1080" href="#" target="_blank" class="dl-btn btn-1080">Download 1080p Full HD (No Watermark)</a>
+      <a id="dl-720" href="#" target="_blank" class="dl-btn btn-720">Download 720p HD (No Watermark)</a>
+      <a id="dl-watermark" href="#" target="_blank" class="dl-btn btn-watermark">Download Watermark Video</a>
+      <a id="dl-audio" href="#" target="_blank" class="dl-btn btn-audio">Download Audio (MP3)</a>
+    </div>
+
+    <div class="footer">
+      © Powered by Dilshan
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Check if already remembered
+  window.onload = function() {
+    if (localStorage.getItem("unlocked") === "true") {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    }
+  }
+
+  function togglePasswordVisibility() {
+    const input = document.getElementById('pass-input');
+    if (input.type === "password") {
+      input.type = "text";
+    } else {
+      input.type = "password";
+    }
+  }
+
+  // Password Verification (#dilshan6767#)
+  function checkPassword() {
+    const input = document.getElementById('pass-input').value;
+    const remember = document.getElementById('remember-me').checked;
+
+    if (input === "#dilshan6767#") {
+      if (remember) {
+        localStorage.setItem("unlocked", "true");
+      }
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    } else {
+      document.getElementById('error-msg').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("unlocked");
+    location.reload();
+  }
+
+  // TikTok Downloader Logic (TikWM API)
+  async function downloadTikTok() {
+    const url = document.getElementById('tiktok-url').value.trim();
+    if (!url) {
+      alert("Please paste a valid TikTok link!");
+      return;
+    }
+    
+    alert("Fetching Video... Please wait!");
+
+    try {
+      const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+      const responseData = await res.json();
+
+      if (responseData && responseData.code === 0 && responseData.data) {
+        const data = responseData.data;
+
+        // Set video preview & description
+        document.getElementById('vid-preview').src = data.play;
+        document.getElementById('vid-desc').innerText = data.title || "TikTok Video";
+
+        // Set Download Links
+        document.getElementById('dl-1080').href = data.hdplay || data.play;
+        document.getElementById('dl-720').href = data.play;
+        document.getElementById('dl-watermark').href = data.wmplay || data.play;
+        document.getElementById('dl-audio').href = data.music || "#";
+
+        // Show result box
+        document.getElementById('result-section').style.display = 'block';
+      } else {
+        alert("Failed to fetch video. Check link and try again.");
+      }
+    } catch (err) {
+      alert("Error downloading video. Try again later.");
+    }
+  }
+
+  // PWA Install Logic
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').style.display = 'block';
+  });
+
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          document.getElementById('installBtn').style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
+</script>
 
 </body>
 </html>
