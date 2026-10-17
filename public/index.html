@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dilshan All In One</title>
+    <title>Dilshan All In One - Utility Toolbox</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            color: #333;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -18,53 +23,67 @@
         header {
             text-align: center;
             margin-bottom: 30px;
+            margin-top: 10px;
         }
-        h1 {
+        header h1 {
             color: #075e54;
+            font-size: 2.2rem;
             margin-bottom: 5px;
         }
-        p {
-            color: #555;
+        header p {
+            color: #666;
+            font-size: 1rem;
         }
         .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
             width: 100%;
-            max-width: 900px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        .card {
+        .tool-card {
             background: #ffffff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             text-align: center;
             transition: transform 0.2s;
         }
-        .card:hover {
-            transform: translateY(-5px);
+        .tool-card:hover {
+            transform: translateY(-3px);
         }
-        .card h3 {
-            color: #075e54;
+        .tool-card h2 {
+            font-size: 1.3rem;
+            color: #128c7e;
             margin-bottom: 10px;
         }
-        .card p {
-            font-size: 14px;
-            color: #666;
+        .tool-card p {
+            font-size: 0.9rem;
+            color: #555;
             margin-bottom: 15px;
+            line-height: 1.4;
         }
         .btn {
             display: inline-block;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-success {
             background-color: #25d366;
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
         }
-        .btn:hover {
-            background-color: #128c7e;
+        .btn-success:hover {
+            background-color: #1ebd56;
+        }
+        .btn-disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -76,31 +95,35 @@
     </header>
 
     <div class="container">
-        <!-- WhatsApp Unban Tool Card -->
-        <div class="card">
-            <h3>WhatsApp Unban Tool</h3>
+        
+        <!-- WhatsApp Unban Tool -->
+        <div class="tool-card">
+            <h2>WhatsApp Unban Tool</h2>
             <p>Generate professional appeal emails and contact WhatsApp support instantly.</p>
-            <a href="/whatsapp-unban" class="btn">Open Tool</a>
+            <a href="/whatsapp-unban.html" class="btn btn-success">Open Tool</a>
         </div>
 
-        <!-- Future Tools (Placeholder) -->
-        <div class="card">
-            <h3>QR Code Generator</h3>
+        <!-- QR Code Generator -->
+        <div class="tool-card">
+            <h2>QR Code Generator</h2>
             <p>Generate custom QR codes easily for links and text.</p>
-            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+            <a href="/qr-generator.html" class="btn btn-success">Open Tool</a>
         </div>
 
-        <div class="card">
-            <h3>Password Generator</h3>
+        <!-- Password Generator -->
+        <div class="tool-card">
+            <h2>Password Generator</h2>
             <p>Create secure and strong random passwords.</p>
-            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+            <a href="/password-generator.html" class="btn btn-success">Open Tool</a>
         </div>
 
-        <div class="card">
-            <h3>TikTok Downloader</h3>
+        <!-- TikTok Downloader -->
+        <div class="tool-card">
+            <h2>TikTok Downloader</h2>
             <p>Download TikTok videos without watermark.</p>
-            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+            <button class="btn btn-disabled" disabled>Coming Soon</button>
         </div>
+
     </div>
 
 </body>
