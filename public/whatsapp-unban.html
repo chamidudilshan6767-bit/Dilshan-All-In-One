@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f4f6f9;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -15,162 +15,102 @@
             align-items: center;
             min-height: 100vh;
         }
-        .container {
-            background: #ffffff;
+        .card {
+            background: white;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 450px;
             width: 100%;
-            max-width: 500px;
         }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 15px;
-            color: #075e54;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        h2 {
-            color: #075e54;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
+        h2 { text-align: center; color: #075e54; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
         input, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             box-sizing: border-box;
-            font-size: 14px;
-        }
-        textarea {
-            resize: vertical;
-            height: 90px;
         }
         button {
+            width: 100%;
             background-color: #25d366;
             color: white;
             border: none;
             padding: 12px;
-            width: 100%;
             border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
         }
-        button:hover {
-            background-color: #128c7e;
-        }
+        button:hover { background-color: #1eb857; }
         .result-box {
             margin-top: 20px;
-            background: #e9edef;
             padding: 15px;
+            background: #e9f5ec;
             border-radius: 6px;
             display: none;
         }
-        .result-box pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: inherit;
-            font-size: 13px;
-            background: #fff;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .link-btn {
-            display: inline-block;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-align: center;
-            margin-top: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .result-box textarea { height: 120px; margin-bottom: 10px; }
+        .btn-email { background-color: #007bff; text-align: center; text-decoration: none; display: block; }
+        .back-link { display: block; text-align: center; margin-bottom: 15px; color: #075e54; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <a href="/" class="back-link">&larr; Back to Home</a>
-        <h2>WhatsApp Unban Tool</h2>
-        <form id="unbanForm">
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number (with Country Code):</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="+947XXXXXXXX" required>
-            </div>
-            <div class="form-group">
-                <label for="userEmail">Your Email (Optional):</label>
-                <input type="email" id="userEmail" name="userEmail" placeholder="example@gmail.com">
-            </div>
-            <div class="form-group">
-                <label for="banReason">What happened? (Optional):</label>
-                <textarea id="banReason" name="banReason" placeholder="Briefly describe the issue..."></textarea>
-            </div>
-            <button type="submit">Generate Appeal Message</button>
-        </form>
-
-        <div id="resultBox" class="result-box">
-            <h3>Generated Appeal:</h3>
-            <p><strong>Subject:</strong> <span id="resSubject"></span></p>
-            <p><strong>Message Body:</strong></p>
-            <pre id="resBody"></pre>
-            <button onclick="copyToClipboard()" style="background-color: #6c757d; margin-top: 5px;">Copy Message</button>
-            <a id="supportLink" href="#" target="_blank" class="link-btn">Go to WhatsApp Support Form</a>
-        </div>
+<div class="card">
+    <a href="/" class="back-link">&larr; Back to Home</a>
+    <h2>WhatsApp Unban Tool</h2>
+    
+    <div class="form-group">
+        <label>Phone Number (with Country Code):</label>
+        <input type="text" id="phone" placeholder="+947XXXXXXXX" required>
     </div>
 
-    <script>
-        document.getElementById('unbanForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const userEmail = document.getElementById('userEmail').value;
-            const banReason = document.getElementById('banReason').value;
+    <div class="form-group">
+        <label>Your Email (Optional):</label>
+        <input type="email" id="email" placeholder="yourname@gmail.com">
+    </div>
 
-            try {
-                const response = await fetch('/api/unban/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phoneNumber, userEmail, banReason })
-                });
+    <div class="form-group">
+        <label>What happened? (Optional):</label>
+        <textarea id="reason" placeholder="Briefly describe the issue..."></textarea>
+    </div>
 
-                const data = await response.json();
+    <button onclick="generateAppeal()">Generate Appeal Message</button>
 
-                if (data.success) {
-                    document.getElementById('resSubject').innerText = data.subject;
-                    document.getElementById('resBody').innerText = data.body;
-                    document.getElementById('supportLink').href = data.supportUrl;
-                    document.getElementById('resultBox').style.display = 'block';
-                } else {
-                    alert(data.error || 'Something went wrong!');
-                }
-            } catch (err) {
-                alert('Server connection error!');
-            }
-        });
+    <div id="resultBox" class="result-box">
+        <label>Generated Appeal Message:</label>
+        <textarea id="appealText" readonly></textarea>
+        <a id="mailToBtn" href="#" class="btn-email" style="color:white; padding:10px; border-radius:6px; font-weight:bold;">Send Email to WhatsApp</a>
+    </div>
+</div>
 
-        function copyToClipboard() {
-            const subject = document.getElementById('resSubject').innerText;
-            const body = document.getElementById('resBody').innerText;
-            const fullText = `Subject: ${subject}\n\n${body}`;
-            navigator.clipboard.writeText(fullText);
-            alert('Appeal message copied to clipboard!');
-        }
-    </script>
+<script>
+function generateAppeal() {
+    const phone = document.getElementById('phone').value.trim();
+    const userEmail = document.getElementById('email').value.trim();
+    const reason = document.getElementById('reason').value.trim();
+
+    if (!phone) {
+        alert("Please enter your phone number!");
+        return;
+    }
+
+    let customReason = reason ? reason : "I haven't violated any terms of service and believe my account was banned by mistake.";
+
+    const message = `Dear WhatsApp Support Team,\n\nMy mobile number ${phone} has been banned from using WhatsApp. I kindly request you to unban my number as soon as possible.\n\nReason: ${customReason}\n\nPlease review my account and restore access.\n\nThank you,\nPhone: ${phone}\nEmail: ${userEmail || 'N/A'}`;
+
+    document.getElementById('appealText').value = message;
+    
+    const mailtoUrl = `mailto:support@whatsapp.com?subject=Unban Request for ${phone}&body=${encodeURIComponent(message)}`;
+    document.getElementById('mailToBtn').href = mailtoUrl;
+
+    document.getElementById('resultBox').style.display = 'block';
+}
+</script>
+
 </body>
 </html>
