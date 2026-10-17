@@ -1,7 +1,7 @@
 {
   "name": "dilshan-all-in-one",
   "version": "1.0.0",
-  "description": "All-in-one utility web app with WhatsApp unban tool and more",
+  "description": "Dilshan All In One Web App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
