@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Dilshan All In One</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center; }
+        h2 { color: #075e54; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; background: #25d366; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+        .back-link { display: block; text-align: center; margin-bottom: 15px; color: #075e54; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <a href="/" class="back-link">&larr; Back to Home</a>
+    <h2>QR Code Generator</h2>
+    <input type="text" id="text" placeholder="Enter URL or Text...">
+    <button onclick="generateQR()">Generate QR Code</button>
+    <div id="qrcode"></div>
+</div>
+
+<script>
+let qrcode = new QRCode(document.getElementById("qrcode"), { width: 200, height: 200 });
+
+function generateQR() {
+    let text = document.getElementById("text").value;
+    if (text.trim() === "") {
+        alert("Please enter text or link!");
+        return;
+    }
+    qrcode.makeCode(text);
+}
+</script>
+
+</body>
+</html>
