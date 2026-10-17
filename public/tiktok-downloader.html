@@ -1,60 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Downloader - Dilshan All In One</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 450px; width: 100%; text-align: center; }
-        h2 { color: #075e54; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; background: #25d366; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        button:hover { background: #1eb857; }
-        .back-link { display: block; text-align: center; margin-bottom: 15px; color: #075e54; text-decoration: none; }
-        #result { margin-top: 20px; display: none; }
-        .download-btn { display: inline-block; width: 100%; background: #007bff; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px; box-sizing: border-box; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dilshan All In One</title>
+
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDJ7CCZVK5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZDJ7CCZVK5');
+  </script>
+
+  <!-- PWA Manifest for App Installation -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    %22name%22:%22Dilshan%20All%20In%20One%22,
+    %22short_name%22:%22Dilshan%20App%22,
+    %22start_url%22:%22/%22,
+    %22display%22:%22standalone%22,
+    %22background_color%22:%22%230d1117%22,
+    %22theme_color%22:%22%230d1117%22,
+    %22icons%22:[{%22src%22:%22https://via.placeholder.com/192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]
+  }">
+
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0b0e14;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #121824;
+      border: 1px solid #1f293d;
+      border-radius: 16px;
+      padding: 25px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    
+    /* Login Lock Screen */
+    #lock-screen {
+      text-align: center;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      border: 1px solid #2a364f;
+      background: #0b0e14;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0072ff, #00c6ff);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    /* Main Content */
+    #main-content {
+      display: none;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .install-btn {
+      padding: 6px 12px;
+      background: #1f293d;
+      border: 1px solid #00c6ff;
+      color: #00c6ff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: #0b0e14;
+      padding: 5px;
+      border-radius: 10px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 5px;
+      border: none;
+      background: transparent;
+      color: #8a99ad;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    .tab-btn.active {
+      background: #1f293d;
+      color: #00c6ff;
+    }
+
+    /* Tab Contents */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* QR Center */
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 12px;
+      color: #5a6b82;
+    }
+  </style>
 </head>
 <body>
 
 <div class="card">
-    <a href="/" class="back-link">&larr; Back to Home</a>
-    <h2>TikTok Video Downloader</h2>
-    <input type="text" id="videoUrl" placeholder="Paste TikTok Video Link here...">
-    <button onclick="downloadVideo()">Fetch Video</button>
+  
+  <!-- Lock Screen Section -->
+  <div id="lock-screen">
+    <h2>🔒 Protected Access</h2>
+    <p style="color: #8a99ad; font-size: 14px; margin-top: 5px;">Enter password to unlock</p>
+    <input type="password" id="pass-input" class="input-field" placeholder="Enter Password">
+    <button class="btn" onclick="checkPassword()">Unlock</button>
+    <p id="error-msg" style="color: #ff4d4d; font-size: 13px; margin-top: 10px; display: none;">Invalid Password!</p>
+  </div>
 
-    <div id="result">
-        <p style="color: green; font-weight: bold;">Video Ready!</p>
-        <a id="dlLink" href="#" target="_blank" class="download-btn">Download Without Watermark</a>
+  <!-- Main Website Section -->
+  <div id="main-content">
+    <div class="header">
+      <h3 style="color: #00c6ff;">Dilshan All In One</h3>
+      <button class="install-btn" id="installBtn" style="display: none;" onclick="installApp()">📲 Install App</button>
     </div>
+
+    <!-- Tab Buttons -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tiktok')">TikTok DL</button>
+      <button class="tab-btn" onclick="switchTab('qr')">QR Generator</button>
+      <button class="tab-btn" onclick="switchTab('pass')">Pass Generator</button>
+    </div>
+
+    <!-- 1. TikTok Downloader -->
+    <div id="tiktok" class="tab-content active">
+      <h4 style="margin-bottom: 10px;">TikTok Video Downloader</h4>
+      <input type="text" class="input-field" placeholder="Paste TikTok Link Here...">
+      <button class="btn">Download Now</button>
+    </div>
+
+    <!-- 2. QR Code Generator -->
+    <div id="qr" class="tab-content">
+      <h4 style="margin-bottom: 10px;">QR Code Generator</h4>
+      <input type="text" id="qr-text" class="input-field" placeholder="Enter Text or URL...">
+      <button class="btn" onclick="generateQR()">Generate QR Code</button>
+      <div id="qrcode"></div>
+    </div>
+
+    <!-- 3. Password Generator -->
+    <div id="pass" class="tab-content">
+      <h4 style="margin-bottom: 10px;">Strong Password Generator</h4>
+      <input type="text" id="pass-result" class="input-field" readonly placeholder="Your Generated Password">
+      <button class="btn" onclick="generatePassword()">Generate Password</button>
+    </div>
+
+    <div class="footer">
+      © Powered by Dilshan
+    </div>
+  </div>
+
 </div>
 
 <script>
-async function downloadVideo() {
-    const url = document.getElementById('videoUrl').value.trim();
-    if (!url) {
-        alert("Please paste a TikTok video URL!");
-        return;
+  // 1. Password Verification (#dilshan6767#)
+  function checkPassword() {
+    const input = document.getElementById('pass-input').value;
+    if (input === "#dilshan6767#") {
+      document.getElementById('lock-screen').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    } else {
+      document.getElementById('error-msg').style.display = 'block';
     }
+  }
 
-    alert("Fetching video... Please wait.");
+  // 2. Switch Tabs Function
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-    try {
-        const response = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
 
-        if (data && data.video && data.video.noWatermark) {
-            document.getElementById('dlLink').href = data.video.noWatermark;
-            document.getElementById('result').style.display = 'block';
-        } else {
-            alert("Could not fetch video. Please check the link and try again.");
+  // 3. QR Code Generator Logic
+  function generateQR() {
+    const text = document.getElementById('qr-text').value;
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = "";
+    if (text) {
+      new QRCode(qrContainer, {
+        text: text,
+        width: 150,
+        height: 150
+      });
+    }
+  }
+
+  // 4. Password Generator Logic
+  function generatePassword() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    let pass = "";
+    for (let i = 0; i < 12; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('pass-result').value = pass;
+  }
+
+  // 5. PWA Install Logic
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').style.display = 'block';
+  });
+
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          document.getElementById('installBtn').style.display = 'none';
         }
-    } catch (error) {
-        alert("Error fetching video. Please try again later.");
+        deferredPrompt = null;
+      });
     }
-}
+  }
 </script>
 
 </body>
-</html>
+        </html>
