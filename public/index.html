@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>TikTok Downloader - Dilshan All In One</title>
+  <title>Dilshan All In One - Utility Toolbox</title>
 
   <!-- Logo / Favicon -->
   <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
+
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     * {
@@ -134,17 +137,53 @@
       font-size: 13px;
     }
 
-    /* Main Logo */
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      background: #0b0e14;
+      padding: 5px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 5px;
+      border: none;
+      background: transparent;
+      color: #8a99ad;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: #1f293d;
+      color: #00c6ff;
+    }
+
+    /* Tab Contents */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Main Logo Box inside TikTok Tab */
     .logo-container {
       display: flex;
       justify-content: center;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
     .main-logo-box {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       border: 2px solid #1f293d;
-      border-radius: 16px;
+      border-radius: 14px;
       background: #0b0e14;
       display: flex;
       justify-content: center;
@@ -152,64 +191,64 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     .main-logo-box img {
-      width: 50px;
-      height: 50px;
+      width: 42px;
+      height: 42px;
       object-fit: contain;
     }
 
-    h2.title {
+    h4.title {
       text-align: center;
       color: #00c6ff;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       letter-spacing: 1px;
       margin-bottom: 5px;
     }
     .subtitle {
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       color: #8a99ad;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       line-height: 1.4;
     }
 
     /* Video Preview & Download Options */
     #result-section {
       display: none;
-      margin-top: 20px;
+      margin-top: 15px;
       border-top: 1px solid #1f293d;
       padding-top: 15px;
     }
     .video-preview {
       width: 100%;
       border-radius: 10px;
-      max-height: 350px;
+      max-height: 280px;
       object-fit: cover;
       margin-bottom: 10px;
     }
     .video-desc {
-      font-size: 13px;
+      font-size: 12px;
       color: #d1d5db;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       line-height: 1.4;
       word-break: break-word;
     }
     .quality-title {
-      font-size: 13px;
+      font-size: 12px;
       color: #8a99ad;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .dl-btn {
       display: block;
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       border-radius: 8px;
       text-align: center;
       text-decoration: none;
       font-weight: bold;
       color: white;
-      margin-bottom: 10px;
-      font-size: 14px;
+      margin-bottom: 8px;
+      font-size: 13px;
     }
     .btn-1080 { background: #22c55e; }
     .btn-1080:hover { background: #16a34a; }
@@ -222,6 +261,13 @@
 
     .btn-audio { background: #a855f7; }
     .btn-audio:hover { background: #9333ea; }
+
+    /* QR Center */
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
 
     .footer {
       text-align: center;
@@ -238,7 +284,7 @@
   <!-- Lock Screen Section -->
   <div id="lock-screen">
     <div style="font-size: 35px; margin-bottom: 5px;">🔒</div>
-    <h2 style="color: #00c6ff; font-size: 1.3rem;">Private Downloader</h2>
+    <h2 style="color: #00c6ff; font-size: 1.3rem;">Dilshan All In One</h2>
     <p style="color: #8a99ad; font-size: 13px; margin-top: 5px;">Please enter password to access</p>
     
     <div class="input-wrapper">
@@ -259,38 +305,71 @@
     <div class="header">
       <div class="top-logo-area">
         <img src="/logo.png" alt="Logo" class="mini-logo">
-        <span>TikTok DL</span>
+        <span>Dilshan Toolbox</span>
       </div>
       <div style="display: flex; gap: 6px;">
-        <button class="install-btn" id="installBtn" style="display: none;" onclick="installApp()">📲 Install App</button>
+        <button class="install-btn" id="installBtn" style="display: none;" onclick="installApp()">📲 Install</button>
         <button class="logout-btn" onclick="logout()">🔒 Logout</button>
       </div>
     </div>
 
-    <!-- Main Logo Box -->
-    <div class="logo-container">
-      <div class="main-logo-box">
-        <img src="/logo.png" alt="Main Logo">
+    <!-- Tab Buttons -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(event, 'tiktok')">TikTok DL</button>
+      <button class="tab-btn" onclick="switchTab(event, 'qr')">QR Gen</button>
+      <button class="tab-btn" onclick="switchTab(event, 'pass')">Pass Gen</button>
+      <button class="tab-btn" onclick="switchTab(event, 'unban')">WA Unban</button>
+    </div>
+
+    <!-- 1. TikTok Downloader Tab -->
+    <div id="tiktok" class="tab-content active">
+      <div class="logo-container">
+        <div class="main-logo-box">
+          <img src="/logo.png" alt="Main Logo">
+        </div>
+      </div>
+      <h4 class="title">TIKTOK DOWNLOADER</h4>
+      <p class="subtitle">Download in 1080p, 720p & MP3 Without Watermark</p>
+
+      <input type="text" id="tiktok-url" class="input-field" placeholder="Paste TikTok Link Here...">
+      <button class="btn" onclick="downloadTikTok()" style="margin-top: 5px;">Download Now</button>
+
+      <!-- Results Section -->
+      <div id="result-section">
+        <video id="vid-preview" class="video-preview" controls></video>
+        <p id="vid-desc" class="video-desc"></p>
+        <p class="quality-title">Select Quality to Download:</p>
+
+        <a id="dl-1080" href="#" target="_blank" class="dl-btn btn-1080">Download 1080p Full HD (No Watermark)</a>
+        <a id="dl-720" href="#" target="_blank" class="dl-btn btn-720">Download 720p HD (No Watermark)</a>
+        <a id="dl-watermark" href="#" target="_blank" class="dl-btn btn-watermark">Download Watermark Video</a>
+        <a id="dl-audio" href="#" target="_blank" class="dl-btn btn-audio">Download Audio (MP3)</a>
       </div>
     </div>
 
-    <h2 class="title">TIKTOK DOWNLOADER</h2>
-    <p class="subtitle">Download TikTok Videos in 1080p, 720p & MP3<br>Without Watermark</p>
+    <!-- 2. QR Code Generator Tab -->
+    <div id="qr" class="tab-content">
+      <h4 style="margin-bottom: 10px; color: #00c6ff;">QR Code Generator</h4>
+      <p class="subtitle">Generate custom QR codes easily for links and text.</p>
+      <input type="text" id="qr-text" class="input-field" placeholder="Enter Text or URL...">
+      <button class="btn" onclick="generateQR()">Generate QR Code</button>
+      <div id="qrcode"></div>
+    </div>
 
-    <!-- Input Section -->
-    <input type="text" id="tiktok-url" class="input-field" placeholder="Paste TikTok Link Here...">
-    <button class="btn" onclick="downloadTikTok()" style="margin-top: 5px;">Download Now</button>
+    <!-- 3. Password Generator Tab -->
+    <div id="pass" class="tab-content">
+      <h4 style="margin-bottom: 10px; color: #00c6ff;">Strong Password Generator</h4>
+      <p class="subtitle">Create secure and strong random passwords.</p>
+      <input type="text" id="pass-result" class="input-field" readonly placeholder="Your Generated Password">
+      <button class="btn" onclick="generatePassword()">Generate Password</button>
+    </div>
 
-    <!-- Results Section -->
-    <div id="result-section">
-      <video id="vid-preview" class="video-preview" controls></video>
-      <p id="vid-desc" class="video-desc"></p>
-      <p class="quality-title">Select Quality to Download:</p>
-
-      <a id="dl-1080" href="#" target="_blank" class="dl-btn btn-1080">Download 1080p Full HD (No Watermark)</a>
-      <a id="dl-720" href="#" target="_blank" class="dl-btn btn-720">Download 720p HD (No Watermark)</a>
-      <a id="dl-watermark" href="#" target="_blank" class="dl-btn btn-watermark">Download Watermark Video</a>
-      <a id="dl-audio" href="#" target="_blank" class="dl-btn btn-audio">Download Audio (MP3)</a>
+    <!-- 4. WhatsApp Unban Tool Tab -->
+    <div id="unban" class="tab-content">
+      <h4 style="margin-bottom: 10px; color: #00c6ff;">WhatsApp Unban Appeal</h4>
+      <p class="subtitle">Generate professional appeal emails instantly.</p>
+      <input type="text" id="wa-number" class="input-field" placeholder="Enter Phone Number (+94...)">
+      <button class="btn" onclick="sendUnbanAppeal()">Send Appeal Email</button>
     </div>
 
     <div class="footer">
@@ -339,6 +418,15 @@
     location.reload();
   }
 
+  // Switch Tabs Function
+  function switchTab(evt, tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+  }
+
   // TikTok Downloader Logic (TikWM API)
   async function downloadTikTok() {
     const url = document.getElementById('tiktok-url').value.trim();
@@ -374,6 +462,42 @@
     } catch (err) {
       alert("Error downloading video. Try again later.");
     }
+  }
+
+  // QR Code Generator Logic
+  function generateQR() {
+    const text = document.getElementById('qr-text').value;
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = "";
+    if (text) {
+      new QRCode(qrContainer, {
+        text: text,
+        width: 140,
+        height: 140
+      });
+    }
+  }
+
+  // Password Generator Logic
+  function generatePassword() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    let pass = "";
+    for (let i = 0; i < 12; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('pass-result').value = pass;
+  }
+
+  // WhatsApp Unban Logic
+  function sendUnbanAppeal() {
+    const num = document.getElementById('wa-number').value.trim();
+    if (!num) {
+      alert("Please enter your banned phone number!");
+      return;
+    }
+    const subject = encodeURIComponent("Banned WhatsApp Account Appeal");
+    const body = encodeURIComponent(`Hello WhatsApp Support,\n\nMy WhatsApp number (${num}) has been banned by mistake. I strictly follow WhatsApp Terms of Service. Please unban my account as soon as possible.\n\nThank you.`);
+    window.location.href = `mailto:support@whatsapp.com?subject=${subject}&body=${body}`;
   }
 
   // PWA Install Logic
