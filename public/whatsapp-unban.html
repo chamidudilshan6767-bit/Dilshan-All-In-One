@@ -1,116 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Unban Tool - Dilshan All In One</title>
+    <meta charset="UTF-8"><title>WhatsApp Unban - Dilshan All In One</title>
+    <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            max-width: 450px;
-            width: 100%;
-        }
-        h2 { text-align: center; color: #075e54; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            background-color: #25d366;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover { background-color: #1eb857; }
-        .result-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e9f5ec;
-            border-radius: 6px;
-            display: none;
-        }
-        .result-box textarea { height: 120px; margin-bottom: 10px; }
-        .btn-email { background-color: #007bff; text-align: center; text-decoration: none; display: block; }
-        .back-link { display: block; text-align: center; margin-bottom: 15px; color: #075e54; text-decoration: none; }
+        body { background: #0b0e14; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI'; padding: 20px; }
+        .card { background: #121824; border: 1px solid #1f293d; padding: 25px; border-radius: 16px; width: 100%; max-width: 450px; }
+        .input-field { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #2a364f; background: #0b0e14; color: #fff; outline: none; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00c6ff); color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
 <div class="card">
-    <a href="/" class="back-link">&larr; Back to Home</a>
-    <h2>WhatsApp Unban Tool</h2>
-    
-    <div class="form-group">
-        <label>Phone Number (with Country Code):</label>
-        <input type="text" id="phone" placeholder="+947XXXXXXXX" required>
-    </div>
-
-    <div class="form-group">
-        <label>Your Email (Optional):</label>
-        <input type="email" id="email" placeholder="yourname@gmail.com">
-    </div>
-
-    <div class="form-group">
-        <label>What happened? (Optional):</label>
-        <textarea id="reason" placeholder="Briefly describe the issue..."></textarea>
-    </div>
-
-    <button onclick="generateAppeal()">Generate Appeal Message</button>
-
-    <div id="resultBox" class="result-box">
-        <label>Generated Appeal Message:</label>
-        <textarea id="appealText" readonly></textarea>
-        <a id="mailToBtn" href="#" class="btn-email" style="color:white; padding:10px; border-radius:6px; font-weight:bold;">Send Email to WhatsApp</a>
-    </div>
+    <a href="/" style="color: #00c6ff; text-decoration: none; font-weight: bold;">&larr; Back to Home</a>
+    <h2 style="color: #00c6ff; margin-top: 15px;">WhatsApp Unban Appeal</h2>
+    <input type="text" id="wa-number" class="input-field" placeholder="Enter Phone Number (+94...)">
+    <button class="btn" onclick="sendUnbanAppeal()">Send Appeal Email</button>
 </div>
-
 <script>
-function generateAppeal() {
-    const phone = document.getElementById('phone').value.trim();
-    const userEmail = document.getElementById('email').value.trim();
-    const reason = document.getElementById('reason').value.trim();
-
-    if (!phone) {
-        alert("Please enter your phone number!");
-        return;
+    function sendUnbanAppeal() {
+        const num = document.getElementById('wa-number').value.trim();
+        if (!num) { alert("Please enter your banned phone number!"); return; }
+        const subject = encodeURIComponent("Banned WhatsApp Account Appeal");
+        const body = encodeURIComponent(`Hello WhatsApp Support,\n\nMy WhatsApp number (${num}) has been banned by mistake. Please unban my account.\n\nThank you.`);
+        window.location.href = `mailto:support@whatsapp.com?subject=${subject}&body=${body}`;
     }
-
-    let customReason = reason ? reason : "I haven't violated any terms of service and believe my account was banned by mistake.";
-
-    const message = `Dear WhatsApp Support Team,\n\nMy mobile number ${phone} has been banned from using WhatsApp. I kindly request you to unban my number as soon as possible.\n\nReason: ${customReason}\n\nPlease review my account and restore access.\n\nThank you,\nPhone: ${phone}\nEmail: ${userEmail || 'N/A'}`;
-
-    document.getElementById('appealText').value = message;
-    
-    const mailtoUrl = `mailto:support@whatsapp.com?subject=Unban Request for ${phone}&body=${encodeURIComponent(message)}`;
-    document.getElementById('mailToBtn').href = mailtoUrl;
-
-    document.getElementById('resultBox').style.display = 'block';
-}
 </script>
-
 </body>
 </html>
