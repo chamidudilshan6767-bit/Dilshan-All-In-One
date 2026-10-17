@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dilshan All In One</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #075e54;
+            margin-bottom: 5px;
+        }
+        p {
+            color: #555;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            color: #075e54;
+            margin-bottom: 10px;
+        }
+        .card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #25d366;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Dilshan All In One</h1>
+        <p>Your ultimate utility toolbox in one place</p>
+    </header>
+
+    <div class="container">
+        <!-- WhatsApp Unban Tool Card -->
+        <div class="card">
+            <h3>WhatsApp Unban Tool</h3>
+            <p>Generate professional appeal emails and contact WhatsApp support instantly.</p>
+            <a href="/whatsapp-unban" class="btn">Open Tool</a>
+        </div>
+
+        <!-- Future Tools (Placeholder) -->
+        <div class="card">
+            <h3>QR Code Generator</h3>
+            <p>Generate custom QR codes easily for links and text.</p>
+            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+        </div>
+
+        <div class="card">
+            <h3>Password Generator</h3>
+            <p>Create secure and strong random passwords.</p>
+            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+        </div>
+
+        <div class="card">
+            <h3>TikTok Downloader</h3>
+            <p>Download TikTok videos without watermark.</p>
+            <a href="#" class="btn" style="background-color: #ccc; pointer-events: none;">Coming Soon</a>
+        </div>
+    </div>
+
+</body>
+</html>
