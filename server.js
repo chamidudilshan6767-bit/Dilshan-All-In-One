@@ -8,11 +8,11 @@ const PORT = process.env.PORT || 3000;
 app.use(useragent.express());
 app.use(express.json());
 
-// Storage
+// Memory-based visitor storage
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
-let userReplies = {}; // Stores replies by IP
+let userReplies = {};
 
 // Helper function to capture visitor details
 function logVisitor(req, pageName) {
@@ -119,7 +119,7 @@ app.get('/:page', (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Protected Admin API (Stats + Messages + Reply Sender)
+// Protected Admin API
 app.post('/api/admin-stats', (req, res) => {
     const { password, replyText, targetIp } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
@@ -128,7 +128,6 @@ app.post('/api/admin-stats', (req, res) => {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
     }
 
-    // If admin sent a reply
     if (replyText && targetIp) {
         userReplies[targetIp] = replyText;
         return res.json({ success: true, message: "Reply sent!" });
@@ -254,7 +253,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             document.getElementById('loginSection').style.display = 'none';
                             document.getElementById('dashSection').style.display = 'block';
                             
-                            // Load Messages
                             const msgContainer = document.getElementById('messagesContainer');
                             if (!data.messages || data.messages.length === 0) {
                                 msgContainer.innerHTML = '<div class="no-logs">No messages received yet.</div>';
@@ -276,7 +274,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                 msgContainer.innerHTML = mHtml;
                             }
 
-                            // Load Visitors
                             const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
                                 container.innerHTML = '<div class="no-logs">No visits recorded yet.</div>';
@@ -339,5 +336,5 @@ app.get('/admin-dashboard-secret', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port `${PORT});
+    console.log(`Server is running on port ${PORT}`);
 });
