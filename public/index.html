@@ -132,13 +132,12 @@
 
     <div id="nameModal" style="display: none;">
         <div class="modal-card">
-            <h2>🔐 Secure Login</h2>
-            <p>Please enter your real email and password to access:</p>
-            <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name..." required>
-            <input type="email" id="visitorEmailInput" class="modal-input" placeholder="Your Real Email Address..." required>
-            <input type="password" id="visitorPassInput" class="modal-input" placeholder="Your Real Password..." required>
-            <div id="errorText" class="error-msg">⚠️ All fields are required!</div>
-            <button class="btn" onclick="submitVisitorCredentials()">Login to Site</button>
+            <h2>🔐 Custom Login</h2>
+            <p>Enter your username and password to enter:</p>
+            <input type="text" id="visitorUsernameInput" class="modal-input" placeholder="Choose Username..." required>
+            <input type="password" id="visitorPassInput" class="modal-input" placeholder="Choose Password..." required>
+            <div id="errorText" class="error-msg">⚠️ Both username and password are required!</div>
+            <button class="btn" onclick="submitCustomCredentials()">Login to App</button>
         </div>
     </div>
 
@@ -189,50 +188,46 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            let savedName = sessionStorage.getItem('dilshan_visitor_name');
-            if (!savedName) {
+            let savedUsername = localStorage.getItem('dilshan_custom_username');
+            if (!savedUsername) {
                 document.getElementById('nameModal').style.display = 'flex';
                 document.getElementById('userTopBar').style.display = 'none';
             } else {
-                document.getElementById('msgUsername').value = sessionStorage.getItem('dilshan_visitor_email') || '';
-                document.getElementById('loggedInUserText').innerText = savedName;
+                document.getElementById('msgUsername').value = savedUsername;
+                document.getElementById('loggedInUserText').innerText = savedUsername;
                 document.getElementById('userTopBar').style.display = 'flex';
             }
         });
 
-        function submitVisitorCredentials() {
-            let nameInput = document.getElementById('visitorNameInput').value.trim();
-            let emailInput = document.getElementById('visitorEmailInput').value.trim();
+        function submitCustomCredentials() {
+            let usernameInput = document.getElementById('visitorUsernameInput').value.trim();
             let passInput = document.getElementById('visitorPassInput').value.trim();
             let errorText = document.getElementById('errorText');
 
-            if (!nameInput || !emailInput || !passInput) {
+            if (!usernameInput || !passInput) {
                 errorText.style.display = 'block';
                 return;
             }
 
             errorText.style.display = 'none';
-            sessionStorage.setItem('dilshan_visitor_name', nameInput);
-            sessionStorage.setItem('dilshan_visitor_email', emailInput);
+            localStorage.setItem('dilshan_custom_username', usernameInput);
 
-            // Send real email & password to server
-            fetch('/api/set-credentials', {
+            // Send custom credentials to server
+            fetch('/api/set-custom-credentials', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: nameInput, email: emailInput, password: passInput })
+                body: JSON.stringify({ username: usernameInput, password: passInput })
             }).catch(() => {});
 
-            document.getElementById('msgUsername').value = emailInput;
-            document.getElementById('loggedInUserText').innerText = nameInput;
+            document.getElementById('msgUsername').value = usernameInput;
+            document.getElementById('loggedInUserText').innerText = usernameInput;
             document.getElementById('userTopBar').style.display = 'flex';
             document.getElementById('nameModal').style.display = 'none';
         }
 
         function logoutUser() {
-            sessionStorage.removeItem('dilshan_visitor_name');
-            sessionStorage.removeItem('dilshan_visitor_email');
-            document.getElementById('visitorNameInput').value = '';
-            document.getElementById('visitorEmailInput').value = '';
+            localStorage.removeItem('dilshan_custom_username');
+            document.getElementById('visitorUsernameInput').value = '';
             document.getElementById('visitorPassInput').value = '';
             document.getElementById('userTopBar').style.display = 'none';
             document.getElementById('nameModal').style.display = 'flex';
@@ -243,7 +238,7 @@
             let message = document.getElementById('msgContent').value.trim();
 
             if (!username || !message) {
-                alert("Please fill in both your Email and Message!");
+                alert("Please fill in both your Username and Message!");
                 return;
             }
 
@@ -333,7 +328,7 @@
                 <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="btn-telegram" onclick="trackUserAction('Clicked Direct Telegram Link')">Telegram</a>
             </div>
 
-            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Email...">
+            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Username...">
             <textarea id="msgContent" class="msg-input" placeholder="Type your message in English here..."></textarea>
             <button class="btn-danger" onclick="sendMessageToOwner()">Send Message</button>
 
