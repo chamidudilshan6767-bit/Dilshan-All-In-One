@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dilshan All In One - Utility Toolbox</title>
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f0ff">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
         
-        /* Background Floating Neon Gems */
         .neon-gem {
             position: fixed;
             background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
@@ -36,57 +37,39 @@
         
         .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Animated Neon Blue Border Effect for Cards */
+        /* Install App Button */
+        .install-btn {
+            display: none; width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff);
+            color: #000; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,240,255,0.6); font-size: 15px; text-transform: uppercase; margin-bottom: 5px;
+        }
+
         .neon-card-border {
-            position: relative;
-            background: rgba(8, 16, 40, 0.9);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            overflow: hidden;
-            z-index: 1;
+            position: relative; background: rgba(8, 16, 40, 0.9); border-radius: 16px;
+            padding: 20px; text-align: center; overflow: hidden; z-index: 1;
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
         }
-
         .neon-card-border::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: conic-gradient(transparent, transparent, transparent, #00f0ff, #0077ff);
-            animation: rotateGlow 4s linear infinite;
-            z-index: -2;
+            animation: rotateGlow 4s linear infinite; z-index: -2;
         }
-
         .neon-card-border::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: #081028;
-            border-radius: 14px;
-            z-index: -1;
+            content: ''; position: absolute; inset: 2px; background: #081028; border-radius: 14px; z-index: -1;
         }
-
         @keyframes rotateGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }
         }
 
         .tool-card h2 { font-size: 1.2rem; color: #00f0ff; margin-bottom: 8px; text-transform: uppercase; }
         .tool-card p { font-size: 0.88rem; color: #b0c4de; margin-bottom: 16px; line-height: 1.4; }
         
-        /* Special Green Animated Border for Admin Card */
         .admin-tool-card::before {
             background: conic-gradient(transparent, transparent, transparent, #00ffcc, #00aa77) !important;
         }
         .admin-tool-card h2 { color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,204,0.5); }
-        .btn-admin {
-            background: linear-gradient(90deg, #00aa77, #00ffcc); color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.7);
-        }
+        .btn-admin { background: linear-gradient(90deg, #00aa77, #00ffcc); color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.7); }
 
-        /* Special Pink/Red Animated Border for Contact Owner Card */
         .contact-owner-card::before {
             background: conic-gradient(transparent, transparent, transparent, #ff0055, #ff5500) !important;
         }
@@ -156,6 +139,26 @@
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installAppBtn').style.display = 'block';
+        });
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('installAppBtn').style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        }
+
         for (let i = 0; i < 22; i++) {
             let gem = document.createElement('div');
             gem.className = 'neon-gem';
@@ -173,6 +176,8 @@
                 document.getElementById('nameModal').style.display = 'flex';
             } else {
                 sendNameToSever(savedName);
+                // Auto-fill username/email field if name was already entered
+                document.getElementById('msgUsername').value = savedName;
             }
         });
 
@@ -191,6 +196,8 @@
             sessionStorage.setItem('dilshan_visitor_name', name);
             sendNameToSever(name);
 
+            // Auto-fill the message input with the saved name
+            document.getElementById('msgUsername').value = name;
             document.getElementById('nameModal').style.display = 'none';
         }
 
@@ -251,6 +258,9 @@
     </header>
 
     <div class="container">
+        <!-- Install App Button -->
+        <button id="installAppBtn" class="install-btn" onclick="installApp()">📲 Install App to Device</button>
+
         <!-- Admin Updates Tool Card -->
         <div class="neon-card-border tool-card admin-tool-card">
             <h2>Admin Updates & Media</h2>
@@ -282,7 +292,7 @@
             <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
         </div>
 
-        <!-- Contact Owner Card -->
+        <!-- Contact Owner Card with Auto-filled Username -->
         <div class="neon-card-border contact-owner-card" style="text-align: left;">
             <h2>💬 Contact Owner</h2>
             <p style="color:#8ab4f8; font-size:0.85rem; margin-bottom:12px; text-align:center;">Reach out via Telegram or send a direct message below!</p>
