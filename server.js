@@ -6,40 +6,57 @@ const PORT = process.env.PORT || 3000;
 
 app.use(useragent.express());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Memory-based visitor storage (Railway friendly)
+// Memory-based visitor storage
 let visitorLogs = [];
 
-// Track visitors (IP, Device, Activity)
-app.use((req, res, next) => {
-    if (!req.url.includes('.') && !req.url.startsWith('/api/') && !req.url.startsWith('/admin-dashboard-secret')) {
-        let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
-        if (ip.includes(',')) ip = ip.split(',')[0].trim();
-        
-        let ua = req.useragent;
-        let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
-        
-        let userAgentRaw = req.headers['user-agent'] || '';
-        if (userAgentRaw.includes('SM-A14') || userAgentRaw.includes('Samsung A14')) {
-            deviceName = 'Samsung Galaxy A14 (Mobile)';
-        }
-
-        let action = `Visited: ${req.url}`;
-        
-        // Add new log to the top
-        visitorLogs.unshift({
-            time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
-            ip: ip,
-            device: deviceName,
-            action: action
-        });
-
-        // Keep last 100 entries
-        if (visitorLogs.length > 100) visitorLogs.pop();
+// Helper function to capture and save visitor details
+function logVisitor(req, pageName) {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    if (ip.includes(',')) ip = ip.split(',')[0].trim();
+    if (ip === '::1' || ip === '127.0.0.1') ip = 'Localhost (You)';
+    
+    let ua = req.useragent;
+    let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
+    
+    let userAgentRaw = req.headers['user-agent'] || '';
+    if (userAgentRaw.includes('SM-A14') || userAgentRaw.includes('Samsung A14')) {
+        deviceName = 'Samsung Galaxy A14 (Mobile)';
     }
-    next();
+
+    visitorLogs.unshift({
+        time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
+        ip: ip,
+        device: deviceName,
+        action: `Visited: ${pageName}`
+    });
+
+    if (visitorLogs.length > 100) visitorLogs.pop();
+}
+
+// Explicit route for Home Page to capture visits 100%
+app.get('/', (req, res) => {
+    logVisitor(req, 'Home Page (/)');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// Explicit route for other main pages
+app.get('/:page', (req, res, next) => {
+    const page = req.params.page;
+    if (page === 'api' || page === 'admin-dashboard-secret') {
+        return next();
+    }
+    const filePath = path.join(__dirname, 'public', page);
+    if (require('fs').existsSync(filePath)) {
+        logVisitor(req, page);
+        res.sendFile(filePath);
+    } else {
+        next();
+    }
+});
+
+// Serve other static assets
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Protected Admin API
 app.post('/api/admin-stats', (req, res) => {
@@ -192,11 +209,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
         </body>
         </html>
     `);
-});
-
-// Fallback to index.html
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
