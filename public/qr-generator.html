@@ -1,31 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>QR Generator - Dilshan All In One</title>
+    <meta charset="UTF-8">
+    <title>Custom QR Generator - Dilshan All In One</title>
     <link rel="icon" type="image/png" href="/logo.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
-        body { background: #0b0e14; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI'; padding: 20px; }
+        body { background: #0b0e14; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', sans-serif; padding: 20px; }
         .card { background: #121824; border: 1px solid #1f293d; padding: 25px; border-radius: 16px; width: 100%; max-width: 450px; }
-        .input-field { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #2a364f; background: #0b0e14; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00c6ff); color: white; font-weight: bold; cursor: pointer; }
-        #qrcode { display: flex; justify-content: center; margin-top: 15px; }
+        .input-field, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #2a364f; background: #0b0e14; color: #fff; outline: none; }
+        .color-group { display: flex; gap: 10px; align-items: center; margin: 10px 0; font-size: 13px; color: #8a99ad; }
+        .color-picker { border: none; background: transparent; cursor: pointer; height: 35px; width: 50px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00c6ff); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #canvas-container { display: flex; justify-content: center; margin-top: 15px; }
+        .file-label { font-size: 13px; color: #8a99ad; display: block; margin-top: 8px; }
     </style>
 </head>
 <body>
 <div class="card">
     <a href="/" style="color: #00c6ff; text-decoration: none; font-weight: bold;">&larr; Back to Home</a>
-    <h2 style="color: #00c6ff; margin-top: 15px;">QR Code Generator</h2>
+    <h2 style="color: #00c6ff; margin-top: 15px; text-align: center;">Custom QR Code Generator</h2>
+    
     <input type="text" id="qr-text" class="input-field" placeholder="Enter Text or URL...">
-    <button class="btn" onclick="generateQR()">Generate QR Code</button>
-    <div id="qrcode"></div>
+    
+    <div class="color-group">
+        <label>QR Color:</label>
+        <input type="color" id="dots-color" class="color-picker" value="#00c6ff">
+        <label>Background:</label>
+        <input type="color" id="bg-color" class="color-picker" value="#ffffff">
+    </div>
+
+    <span class="file-label">Add Logo/Image in Center (Optional):</span>
+    <input type="file" id="logo-file" accept="image/*" class="input-field">
+
+    <button class="btn" onclick="generateCustomQR()">Generate Custom QR</button>
+    
+    <div id="canvas-container"></div>
 </div>
+
 <script>
-    function generateQR() {
-        const text = document.getElementById('qr-text').value;
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = "";
-        if (text) new QRCode(qrContainer, { text: text, width: 150, height: 150 });
+    let qrCode;
+
+    function generateCustomQR() {
+        const text = document.getElementById('qr-text').value.trim();
+        if (!text) { alert("Please enter text or URL!"); return; }
+
+        const dotsColor = document.getElementById('dots-color').value;
+        const bgColor = document.getElementById('bg-color').value;
+        const logoFile = document.getElementById('logo-file').files[0];
+
+        const container = document.getElementById('canvas-container');
+        container.innerHTML = "";
+
+        const options = {
+            width: 200,
+            height: 200,
+            type: "svg",
+            data: text,
+            dotsOptions: { color: dotsColor, type: "rounded" },
+            backgroundOptions: { color: bgColor },
+            imageOptions: { crossOrigin: "anonymous", margin: 5 }
+        };
+
+        if (logoFile) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                options.image = e.target.result;
+                qrCode = new QRCodeStyling(options);
+                qrCode.append(container);
+            };
+            reader.readAsDataURL(logoFile);
+        } else {
+            qrCode = new QRCodeStyling(options);
+            qrCode.append(container);
+        }
     }
 </script>
 </body>
