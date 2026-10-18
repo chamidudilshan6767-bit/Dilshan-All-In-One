@@ -57,10 +57,10 @@
         <div class="color-pickers">
             <div>
                 <label>QR Color:</label>
-                <input type="color" id="qrColor" value="#00f0ff">
+                <input type="color" id="qrColor" value="#000000">
             </div>
             <div>
-                <label>Background:</label>
+                <label>Background Color:</label>
                 <input type="color" id="bgColor" value="#ffffff">
             </div>
         </div>
@@ -69,7 +69,7 @@
 
         <div id="qrcode"></div>
 
-        <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code as Image</button>
+        <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code with Background</button>
 
         <div class="footer-text">© Powered by Dilshan</div>
     </div>
@@ -87,12 +87,13 @@
 
             let qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = "";
+            qrContainer.style.background = bgColor; // Set preview container background
             qrContainer.style.display = "flex";
 
             new QRCode(qrContainer, {
                 text: text,
-                width: 250,
-                height: 250,
+                width: 230,
+                height: 230,
                 colorDark: fgColor,
                 colorLight: bgColor,
                 correctLevel: QRCode.CorrectLevel.H
@@ -103,27 +104,45 @@
 
         function downloadQR() {
             let qrContainer = document.getElementById('qrcode');
-            let img = qrContainer.querySelector('img');
-            let canvas = qrContainer.querySelector('canvas');
+            let canvasOriginal = qrContainer.querySelector('canvas');
+            let imgOriginal = qrContainer.querySelector('img');
+            let bgColor = document.getElementById('bgColor').value;
 
-            let imageURL = "";
+            let finalCanvas = document.createElement('canvas');
+            let ctx = finalCanvas.getContext('2d');
 
-            if (canvas) {
-                imageURL = canvas.toDataURL("image/png");
-            } else if (img && img.src) {
-                imageURL = img.src;
-            }
+            let padding = 30; // Padding around QR code for neat background look
+            let size = 230;
+            finalCanvas.width = size + (padding * 2);
+            finalCanvas.height = size + (padding * 2);
 
-            if (imageURL) {
-                let link = document.createElement('a');
-                link.href = imageURL;
-                link.download = 'Dilshan-QR-Code.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            // Draw Custom Background Color
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            if (canvasOriginal) {
+                ctx.drawImage(canvasOriginal, padding, padding, size, size);
+                triggerDownload(finalCanvas.toDataURL("image/png"));
+            } else if (imgOriginal) {
+                let tempImg = new Image();
+                tempImg.crossOrigin = "anonymous";
+                tempImg.onload = function() {
+                    ctx.drawImage(tempImg, padding, padding, size, size);
+                    triggerDownload(finalCanvas.toDataURL("image/png"));
+                };
+                tempImg.src = imgOriginal.src;
             } else {
                 alert("QR Code image not generated yet!");
             }
+        }
+
+        function triggerDownload(dataURL) {
+            let link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'Dilshan-Custom-Background-QR.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
