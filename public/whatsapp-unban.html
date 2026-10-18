@@ -6,22 +6,53 @@
     <title>WhatsApp Unban - Dilshan All In One</title>
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .card { width: 100%; max-width: 450px; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); }
-        .back-link { display: inline-block; margin-bottom: 15px; color: #128c7e; text-decoration: none; font-weight: bold; font-size: 14px; }
-        h2 { text-align: center; color: #075e54; font-size: 1.4rem; margin-bottom: 15px; }
-        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; color: #333; font-size: 15px; outline: none; margin-bottom: 12px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #25d366; color: white; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:hover { background: #1ebd56; }
-        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #888; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #030712; color: #fff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+        
+        .neon-gem {
+            position: fixed;
+            background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
+            box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff;
+            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: fallAndGlow linear infinite;
+            z-index: 0;
+        }
+        @keyframes fallAndGlow {
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
+            20% { opacity: 0.9; }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .card { width: 100%; max-width: 450px; background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.35); z-index: 1; position: relative; backdrop-filter: blur(8px); }
+        .back-link { display: inline-block; margin-bottom: 15px; color: #00f0ff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        h2 { text-align: center; color: #00f0ff; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #0a4f8a; background: #050b18; color: #fff; font-size: 15px; outline: none; margin-bottom: 12px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 0 12px rgba(0,240,255,0.6); }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #5a738e; }
     </style>
 </head>
 <body>
+<script>
+    for (let i = 0; i < 15; i++) {
+        let gem = document.createElement('div');
+        gem.className = 'neon-gem';
+        let size = Math.random() * 8 + 6 + 'px';
+        gem.style.width = size;
+        gem.style.height = size;
+        gem.style.left = Math.random() * 100 + 'vw';
+        gem.style.animationDuration = Math.random() * 6 + 4 + 's';
+        gem.style.animationDelay = Math.random() * 5 + 's';
+        document.body.appendChild(gem);
+    }
+</script>
+
 <div class="card">
     <a href="/" class="back-link">&larr; Back to Home</a>
     <h2>WhatsApp Unban Appeal</h2>
-    <input type="text" id="wa-number" class="input-field" placeholder="Enter Phone Number (+94...)">
+    <input type="text" id="wa-number" class="input-field" placeholder="Enter Banned Phone Number (+94...)">
     <button class="btn" onclick="sendUnbanAppeal()">Send Appeal Email</button>
     <div class="footer">© Powered by Dilshan</div>
 </div>
