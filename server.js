@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const useragent = require('express-useragent');
+const geoip = require('geoip-lite');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -10,11 +11,26 @@ app.use(express.json());
 // Memory-based visitor storage
 let visitorLogs = [];
 
-// Helper function to capture and save visitor details
+// Helper function to capture and save visitor details with Location
 function logVisitor(req, pageName) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
-    if (ip === '::1' || ip === '127.0.0.1') ip = 'Localhost (You)';
+    
+    // Default location
+    let locationStr = "Unknown Location";
+
+    if (ip === '::1' || ip === '127.0.0.1' || ip.startsWith('192.168.')) {
+        ip = 'Localhost (You)';
+        locationStr = 'Local Network';
+    } else {
+        // Fetch Location from IP
+        let geo = geoip.lookup(ip);
+        if (geo) {
+            let country = geo.country || '';
+            let city = geo.city || '';
+            locationStr = `${city ? city + ', ' : ''}${country}`;
+        }
+    }
     
     let ua = req.useragent;
     let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
@@ -27,6 +43,7 @@ function logVisitor(req, pageName) {
     visitorLogs.unshift({
         time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
         ip: ip,
+        location: locationStr,
         device: deviceName,
         action: `Visited: ${pageName}`
     });
@@ -55,7 +72,7 @@ app.get('/:page', (req, res, next) => {
     }
 });
 
-// Serve other static assets
+// Serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Protected Admin API
@@ -73,7 +90,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard App Route
+// Secret Admin Dashboard App Route with Location Column
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -102,7 +119,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 body { background: #030712; color: #00f0ff; font-family: 'Segoe UI', monospace; padding: 15px; margin: 0; }
                 h1 { text-align: center; text-shadow: 0 0 10px #00f0ff; font-size: 1.3rem; margin-top: 10px; text-transform: uppercase; }
                 .install-btn { display: none; margin: 10px auto; width: 100%; max-width: 400px; padding: 12px; background: #00f0ff; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px #00f0ff; font-size: 14px; text-transform: uppercase; }
-                .login-box, .dashboard { max-width: 800px; margin: 20px auto; background: #081028; border: 1px solid #00f0ff; padding: 20px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,240,255,0.3); }
+                .login-box, .dashboard { max-width: 900px; margin: 20px auto; background: #081028; border: 1px solid #00f0ff; padding: 20px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,240,255,0.3); }
                 input, button { padding: 12px; margin: 8px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 6px; width: 100%; font-size: 14px; outline: none; }
                 button { background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; cursor: pointer; text-transform: uppercase; }
                 .table-container { overflow-x: auto; margin-top: 15px; }
@@ -131,6 +148,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             <tr>
                                 <th>Time</th>
                                 <th>IP Address</th>
+                                <th>Location</th>
                                 <th>Device Info</th>
                                 <th>Action / Activity</th>
                             </tr>
@@ -180,12 +198,13 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             
                             let html = '';
                             if (data.logs.length === 0) {
-                                html = '<tr><td colspan="4" style="text-align:center; color:#8ab4f8;">No visits recorded yet. Open main site in new tab!</td></tr>';
+                                html = '<tr><td colspan="5" style="text-align:center; color:#8ab4f8;">No visits recorded yet. Open main site in new tab!</td></tr>';
                             } else {
                                 data.logs.forEach(log => {
                                     html += \`<tr>
                                         <td>\${log.time}</td>
                                         <td style="color:#ff0055; font-weight:bold;">\${log.ip}</td>
+                                        <td style="color:#00f0ff; font-weight:bold;">\${log.location}</td>
                                         <td>\${log.device}</td>
                                         <td>\${log.action}</td>
                                     </tr>\`;
