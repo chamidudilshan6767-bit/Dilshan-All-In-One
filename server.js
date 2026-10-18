@@ -9,6 +9,7 @@ app.use(useragent.express());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Permanent Data Storage Arrays (No auto-delete/limit applied)
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
@@ -55,8 +56,7 @@ function logVisitor(req, pageName) {
         device: deviceName,
         action: `Visited: ${pageName}`
     });
-
-    if (visitorLogs.length > 100) visitorLogs.pop();
+    // Removed length limit to prevent auto-deleting old visitor logs
 }
 
 app.post('/api/set-name', (req, res) => {
@@ -88,7 +88,7 @@ app.post('/api/send-owner-message', (req, res) => {
             username: username,
             message: message
         });
-        if (ownerMessages.length > 50) ownerMessages.pop();
+        // Removed length limit to store all owner messages permanently
     }
     res.json({ success: true });
 });
@@ -144,6 +144,7 @@ app.post('/api/admin-stats', (req, res) => {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
     }
 
+    // Explicit deletion requested by Admin ONLY
     if (deleteNoticeId) {
         adminNotices = adminNotices.filter(n => n.id !== deleteNoticeId);
         return res.json({ success: true, message: "Deleted successfully!" });
@@ -157,7 +158,7 @@ app.post('/api/admin-stats', (req, res) => {
             mediaType: mediaType || 'text',
             mediaData: mediaData || null
         });
-        if (adminNotices.length > 20) adminNotices.pop();
+        // Removed length limit to keep published posts indefinitely until admin deletes
         return res.json({ success: true, message: "Published successfully!" });
     }
 
@@ -175,7 +176,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Route with its OWN manifest for Admin App installation
+// Secret Admin Dashboard Route
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
