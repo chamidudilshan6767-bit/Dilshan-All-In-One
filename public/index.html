@@ -3,146 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dilshan All In One - Utility Toolbox</title>
+    <title>Dilshan All In One — Developer & Cyber Utility Hub</title>
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <!-- Custom Google Font to eliminate AI typography feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --border-color: #1f2937;
-            --border-hover: #3b82f6;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --accent-blue: #3b82f6;
-            --accent-cyan: #06b6d4;
-            --accent-green: #10b981;
-            --accent-pink: #ec4899;
+            --bg-body: #090d16;
+            --bg-surface: #111827;
+            --bg-surface-hover: #1f293d;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-active: #2563eb;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --brand-blue: #3b82f6;
+            --brand-cyan: #06b6d4;
+            --brand-emerald: #10b981;
+            --brand-rose: #f43f5e;
+            --radius-lg: 16px;
+            --radius-md: 10px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            padding: 24px 16px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-body); 
+            color: var(--text-primary); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 40px;
         }
 
-        header { text-align: center; margin-bottom: 32px; margin-top: 12px; }
-        
-        .logo-box {
-            width: 80px; height: 80px; border-radius: 20px; background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            display: flex; justify-content: center; align-items: center; margin: 0 auto 16px auto; overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        /* Developer Glass Navigation Header */
+        nav {
+            width: 100%;
+            max-width: 520px;
+            position: sticky;
+            top: 12px;
+            z-index: 100;
+            padding: 0 16px;
+            margin-top: 12px;
         }
-        .logo-img { width: 50px; height: 50px; object-fit: contain; }
-        
-        header h1 { color: var(--text-main); font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.025em; }
-        header p { color: var(--text-muted); font-size: 0.875rem; font-weight: 400; }
-        
-        .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
-        
-        /* Clean Professional Card Style */
-        .card {
-            background: var(--card-bg); 
-            border: 1px solid var(--border-color); 
+
+        .nav-inner {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .brand-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .brand-logo span {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--brand-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--brand-emerald);
+            border-radius: 50%;
+        }
+
+        /* Hero / Profile Header Section */
+        header {
+            width: 100%;
+            max-width: 520px;
+            padding: 32px 20px 20px 20px;
+            text-align: center;
+        }
+
+        .profile-avatar-box {
+            width: 88px;
+            height: 88px;
+            border-radius: 24px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 16px auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            padding: 8px;
+        }
+
+        .profile-avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Tools Feed Container */
+        .container {
+            width: 100%;
+            max-width: 520px;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Clean Developer Tool Card Styling */
+        .tool-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            border-radius: 14px; 
-            text-align: left;
-            transition: border-color 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .card:hover { border-color: var(--border-hover); }
-        
-        .card h2 { font-size: 1rem; color: var(--text-main); margin-bottom: 6px; font-weight: 600; }
-        .card p { font-size: 0.825rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
-        
-        .admin-card { border-left: 3px solid var(--accent-green); }
-        .admin-card h2 { color: var(--accent-green); }
 
-        .contact-card { border-left: 3px solid var(--accent-pink); }
-        .contact-card h2 { color: var(--accent-pink); }
-
-        /* Professional Buttons */
-        .btn {
-            display: block; width: 100%; padding: 10px 16px; border-radius: 8px; font-weight: 600;
-            text-decoration: none; font-size: 0.875rem; cursor: pointer; border: none;
-            background: var(--accent-blue); color: #fff; text-align: center;
-            transition: background 0.2s ease;
+        .tool-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+            background: var(--bg-surface-hover);
         }
-        .btn:hover { background: #2563eb; }
 
-        .btn-admin { background: #059669; }
-        .btn-admin:hover { background: #047857; }
-
-        .btn-danger { background: #e11d48; margin-top: 12px; }
-        .btn-danger:hover { background: #be123c; }
-
-        /* Telegram & Input fields */
-        .telegram-box {
-            background: #0b0f19; border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .telegram-box span { font-size: 0.875rem; color: var(--text-main); font-weight: 500; }
-        
-        .btn-telegram {
-            padding: 6px 12px; background: #0284c7; color: #fff;
-            border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem;
-            text-decoration: none; display: inline-block;
-        }
-        .btn-telegram:hover { background: #0369a1; }
 
-        .msg-input {
-            width: 100%; padding: 10px 14px; background: #0b0f19; border: 1px solid var(--border-color);
-            color: var(--text-main); border-radius: 8px; font-size: 0.875rem; margin-bottom: 10px; outline: none;
+        .category-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--brand-blue);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-desc {
+            font-size: 0.825rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px 16px;
+            background: #1e293b;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .tool-card:hover .btn-action {
+            background: var(--brand-blue);
+            border-color: var(--brand-blue);
+            color: #ffffff;
+        }
+
+        /* Admin Special Card */
+        .admin-card-style {
+            border-left: 4px solid var(--brand-emerald);
+        }
+        .admin-card-style .category-tag {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--brand-emerald);
+        }
+        .admin-card-style:hover .btn-action {
+            background: var(--brand-emerald);
+            border-color: var(--brand-emerald);
+        }
+
+        /* Contact Section */
+        .contact-card-style {
+            border-left: 4px solid var(--brand-rose);
+        }
+
+        .telegram-row {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .telegram-row span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tg-btn {
+            background: #0284c7;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.775rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .tg-btn:hover { background: #0369a1; }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            outline: none;
             transition: border-color 0.2s;
         }
-        .msg-input:focus { border-color: var(--accent-blue); }
-        textarea.msg-input { height: 70px; resize: none; }
+        .form-input:focus { border-color: var(--brand-rose); }
+        textarea.form-input { height: 75px; resize: none; }
+
+        .btn-send {
+            background: var(--brand-rose);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn-send:hover { background: #e11d48; }
 
         .reply-box {
-            margin-top: 12px; background: #0b0f19; border: 1px solid var(--accent-green); padding: 12px;
-            border-radius: 8px; display: none;
+            margin-top: 10px;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            display: none;
         }
-        .reply-box h4 { color: var(--accent-green); font-size: 0.85rem; margin-bottom: 4px; font-weight: 600; }
-        .reply-box p { color: var(--text-main); font-size: 0.85rem; margin: 0; }
+        .reply-box h4 { color: var(--brand-emerald); font-size: 0.8rem; margin-bottom: 4px; font-weight: 700; }
+        .reply-box p { color: var(--text-primary); font-size: 0.825rem; }
 
-        .footer { text-align: center; margin-top: 28px; font-size: 0.75rem; color: var(--text-muted); }
+        .footer {
+            margin-top: 36px;
+            font-size: 0.775rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
 
-        /* Professional Modal */
+        /* Modern Name Popup Modal */
         #nameModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.9); display: flex; justify-content: center;
-            align-items: center; z-index: 99999; padding: 20px; backdrop-filter: blur(5px);
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; padding: 20px;
         }
-        .modal-card {
-            background: var(--card-bg); border: 1px solid var(--border-color); padding: 24px; border-radius: 16px;
-            width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+        .modal-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .modal-card h2 { color: var(--text-main); font-size: 1.2rem; margin-bottom: 6px; font-weight: 600; }
-        .modal-card p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px; }
-        .modal-input {
-            width: 100%; padding: 10px 14px; background: var(--bg-color); border: 1px solid var(--border-color);
-            color: var(--text-main); border-radius: 8px; font-size: 0.9rem; margin-bottom: 12px; outline: none; text-align: center;
-        }
-        .modal-input:focus { border-color: var(--accent-blue); }
-        .error-msg { color: #f43f5e; font-size: 0.75rem; margin-bottom: 10px; display: none; font-weight: 500; }
+
+        .modal-box h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+        .modal-box p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 18px; }
+
+        .error-label { color: var(--brand-rose); font-size: 0.775rem; margin-bottom: 10px; display: none; font-weight: 600; }
     </style>
 </head>
 <body>
 
+    <!-- Mandatory Name Modal -->
     <div id="nameModal" style="display: none;">
-        <div class="modal-card">
-            <h2>Welcome</h2>
-            <p>Please enter your name to continue:</p>
-            <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name..." required>
-            <div id="errorText" class="error-msg">Name is required!</div>
-            <button class="btn" onclick="submitVisitorName()">Continue</button>
+        <div class="modal-box">
+            <h3>Welcome</h3>
+            <p>Please enter your name to access tools:</p>
+            <input type="text" id="visitorNameInput" class="form-input" style="text-align: center; margin-bottom: 12px;" placeholder="Your Name..." required>
+            <div id="errorText" class="error-label">Name is required to proceed!</div>
+            <button class="btn-action" style="background: var(--brand-blue); border-color: var(--brand-blue); color:#fff;" onclick="submitVisitorName()">Continue to Site</button>
         </div>
     </div>
 
@@ -163,7 +372,7 @@
 
             if (!name) {
                 errorText.style.display = 'block';
-                inputField.style.borderColor = '#f43f5e';
+                inputField.style.borderColor = 'var(--brand-rose)';
                 return;
             }
 
@@ -187,7 +396,7 @@
             let message = document.getElementById('msgContent').value.trim();
 
             if (!username || !message) {
-                alert("Please fill in both fields!");
+                alert("Please complete both input fields.");
                 return;
             }
 
@@ -222,67 +431,112 @@
         setInterval(checkUserReply, 6000);
     </script>
 
+    <!-- Top Navigation Bar -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="brand-logo">
+                <img src="/logo.svg" alt="Logo">
+                <span>Dilshan Hub</span>
+            </a>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                System Live
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
     <header>
-        <div class="logo-box">
-            <img src="/logo.svg" alt="Logo" class="logo-img">
+        <div class="profile-avatar-box">
+            <img src="/logo.svg" alt="Dilshan Profile Logo">
         </div>
         <h1>Dilshan All In One</h1>
-        <p>Utility Toolbox & Developer Hub</p>
+        <p>Cyber Utilities & Development Portal</p>
     </header>
 
+    <!-- Main Tools Container -->
     <div class="container">
+        
         <!-- Admin Updates Card -->
-        <div class="card admin-card">
-            <h2>Admin Updates & Media</h2>
-            <p>View latest announcements, images, audio, video and files shared by Admin.</p>
-            <a href="/admin-updates.html" class="btn btn-admin">Open Admin Feed</a>
+        <div class="tool-card admin-card-style">
+            <div class="card-top">
+                <div class="category-tag">UPDATES & MEDIA</div>
+            </div>
+            <div class="card-title">Admin Broadcast Feed</div>
+            <div class="card-desc">Access latest announcements, official documents, audio, videos, and media files released by Admin.</div>
+            <a href="/admin-updates.html" class="btn-action">Open Feed →</a>
         </div>
 
-        <div class="card">
-            <h2>WhatsApp Unban Tool</h2>
-            <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
-            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
+        <!-- WhatsApp Unban Tool -->
+        <div class="tool-card">
+            <div class="card-top">
+                <div class="category-tag">WHATSAPP TOOL</div>
+            </div>
+            <div class="card-title">WhatsApp Unban Appeal Tool</div>
+            <div class="card-desc">Generate official support appeal templates to clear WhatsApp account restrictions quickly.</div>
+            <a href="/whatsapp-unban.html" class="btn-action">Open Tool →</a>
         </div>
         
-        <div class="card">
-            <h2>QR Code Generator</h2>
-            <p>Create Custom QR Codes with Custom Colors & Logo Support.</p>
-            <a href="/qr-generator.html" class="btn">Open Generator</a>
+        <!-- QR Generator -->
+        <div class="tool-card">
+            <div class="card-top">
+                <div class="category-tag">GENERATOR</div>
+            </div>
+            <div class="card-title">Custom QR Code Studio</div>
+            <div class="card-desc">Generate custom styled QR codes with color choices, background modes, and direct image export.</div>
+            <a href="/qr-generator.html" class="btn-action">Open Tool →</a>
         </div>
         
-        <div class="card">
-            <h2>Password Generator</h2>
-            <p>Generate Strong Custom Passwords with Prefix & Custom Options.</p>
-            <a href="/password-generator.html" class="btn">Open Generator</a>
+        <!-- Password Generator -->
+        <div class="tool-card">
+            <div class="card-top">
+                <div class="category-tag">SECURITY</div>
+            </div>
+            <div class="card-title">Strong Password Generator</div>
+            <div class="card-desc">Build high-entropy secure passwords with custom prefix, character rules, and length settings.</div>
+            <a href="/password-generator.html" class="btn-action">Open Tool →</a>
         </div>
         
-        <div class="card">
-            <h2>Media Downloader</h2>
-            <p>Download TikTok Videos in HD & MP3 Without Watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
+        <!-- Media Downloader -->
+        <div class="tool-card">
+            <div class="card-top">
+                <div class="category-tag">DOWNLOADER</div>
+            </div>
+            <div class="card-title">TikTok Media Downloader</div>
+            <div class="card-desc">Download TikTok videos without watermark in HD video or audio MP3 format.</div>
+            <a href="/tiktok-downloader.html" class="btn-action">Open Tool →</a>
         </div>
 
-        <!-- Contact Owner Card -->
-        <div class="card contact-card">
-            <h2>Contact Owner</h2>
-            <p>Reach out via Telegram or send a direct message below.</p>
+        <!-- Contact Owner Section -->
+        <div class="tool-card contact-card-style">
+            <div class="card-top">
+                <div class="category-tag" style="background:rgba(244,63,94,0.1); color:var(--brand-rose);">SUPPORT</div>
+            </div>
+            <div class="card-title">Contact Developer</div>
+            <div class="card-desc">Connect directly via Telegram or submit an instant private inquiry.</div>
             
-            <div class="telegram-box">
+            <div class="telegram-row">
                 <span>Telegram: @Dilshan7878</span>
-                <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="btn-telegram">Telegram</a>
+                <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="tg-btn">Direct Chat</a>
             </div>
 
-            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Username or Email...">
-            <textarea id="msgContent" class="msg-input" placeholder="Type your message here..."></textarea>
-            <button class="btn btn-danger" onclick="sendMessageToOwner()">Send Message</button>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
+                <input type="text" id="msgUsername" class="form-input" placeholder="Your Username or Email...">
+                <textarea id="msgContent" class="form-input" placeholder="Type your message here..."></textarea>
+                <button class="btn-send" onclick="sendMessageToOwner()">Send Message</button>
+            </div>
 
             <div id="userReplyBox" class="reply-box">
-                <h4>Owner's Reply:</h4>
+                <h4>Developer Reply:</h4>
                 <p id="replyText"></p>
             </div>
         </div>
+
     </div>
 
-    <div class="footer">© Powered by Dilshan</div>
+    <div class="footer">
+        © 2026 Dilshan All In One — All Rights Reserved
+    </div>
+
 </body>
 </html>
