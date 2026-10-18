@@ -23,7 +23,7 @@
         .feed-item { background: #030712; border-left: 3px solid #00ffcc; padding: 14px; border-radius: 8px; margin-bottom: 15px; font-size: 0.95rem; color: #fff; text-align: left; }
         .feed-item img, .feed-item video { width: 100%; border-radius: 6px; margin-top: 10px; max-height: 350px; object-fit: contain; }
         .feed-item audio { width: 100%; margin-top: 10px; }
-        .feed-item a.file-dl-btn { display: inline-block; margin-top: 10px; padding: 10px 16px; background: #00ffcc; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 0.9rem; }
+        .feed-item a.file-dl-btn { display: inline-block; margin-top: 10px; padding: 10px 16px; background: #00ffcc; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 0.9rem; text-align: center; width: 100%; }
         .feed-time { font-size: 11px; color: #8ab4f8; margin-top: 8px; display: block; text-align: right; }
         
         .no-posts { color: #8ab4f8; font-size: 14px; padding: 30px; }
@@ -66,7 +66,7 @@
                     } else if (n.mediaType === 'video' && n.mediaData) {
                         mediaContent = `<video controls src="${n.mediaData}"></video>`;
                     } else if (n.mediaType === 'file' && n.mediaData) {
-                        mediaContent = `<br><a href="${n.mediaData}" download="Admin-File" class="file-dl-btn">📎 Download Attached File</a>`;
+                        mediaContent = `<br><a href="${n.mediaData}" download="Admin-Document" class="file-dl-btn">📎 Download Attached File</a>`;
                     }
 
                     html += `
