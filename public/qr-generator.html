@@ -3,100 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Generator - Dilshan All In One</title>
-    <link rel="icon" type="image/png" href="/logo.png">
-    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <title>Custom QR Generator - Dilshan All In One</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #030712; color: #fff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        .neon-gem {
-            position: fixed;
-            background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
-            box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff;
-            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
-            pointer-events: none;
-            opacity: 0.8;
-            animation: fallAndGlow linear infinite;
-            z-index: 0;
+        .card {
+            background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px;
+            border-radius: 16px; width: 100%; max-width: 450px; text-align: center;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); margin-top: 20px;
         }
-        @keyframes fallAndGlow {
-            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
-            20% { opacity: 0.9; }
-            80% { opacity: 0.9; }
-            100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
+        h1 { color: #00f0ff; font-size: 1.5rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,240,255,0.6); text-transform: uppercase; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 0.85rem; color: #8ab4f8; margin-bottom: 5px; text-transform: uppercase; }
+        input[type="text"] { width: 100%; padding: 12px; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 14px; outline: none; }
+        
+        .color-pickers { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+        .color-pickers div { flex: 1; text-align: left; }
+        input[type="color"] { width: 100%; height: 40px; border: 1px solid #00f0ff; background: #030712; border-radius: 8px; cursor: pointer; padding: 2px; }
+
+        .btn {
+            display: block; width: 100%; padding: 14px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; border: none; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.7); text-transform: uppercase; font-size: 1rem; margin-top: 10px;
+        }
+        .btn-download {
+            background: linear-gradient(90deg, #00ffcc, #00aa77); color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.7); display: none; margin-top: 12px;
         }
 
-        .card { width: 100%; max-width: 450px; background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.35); z-index: 1; position: relative; backdrop-filter: blur(8px); }
-        .back-link { display: inline-block; margin-bottom: 15px; color: #00f0ff; text-decoration: none; font-weight: bold; font-size: 14px; }
-        h2 { text-align: center; color: #00f0ff; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
-        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #0a4f8a; background: #050b18; color: #fff; font-size: 15px; outline: none; margin-bottom: 12px; }
-        .color-group { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; font-size: 13px; color: #8ab4f8; }
-        .color-picker { border: none; background: transparent; cursor: pointer; height: 35px; width: 50px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 0 12px rgba(0,240,255,0.6); }
-        #canvas-container { display: flex; justify-content: center; margin-top: 15px; background: #fff; padding: 10px; border-radius: 10px; }
-        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #5a738e; }
+        #qrcode { margin: 20px auto; display: flex; justify-content: center; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; }
+        
+        .back-link { display: inline-block; margin-top: 20px; color: #8ab4f8; text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #00f0ff; text-decoration: underline; }
     </style>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-<script>
-    for (let i = 0; i < 15; i++) {
-        let gem = document.createElement('div');
-        gem.className = 'neon-gem';
-        let size = Math.random() * 8 + 6 + 'px';
-        gem.style.width = size;
-        gem.style.height = size;
-        gem.style.left = Math.random() * 100 + 'vw';
-        gem.style.animationDuration = Math.random() * 6 + 4 + 's';
-        gem.style.animationDelay = Math.random() * 5 + 's';
-        document.body.appendChild(gem);
-    }
-</script>
 
-<div class="card">
-    <a href="/" class="back-link">&larr; Back to Home</a>
-    <h2>Custom QR Generator</h2>
-    <input type="text" id="qr-text" class="input-field" placeholder="Enter Text or URL...">
-    <div class="color-group">
-        <label>QR Color:</label>
-        <input type="color" id="dots-color" class="color-picker" value="#00f0ff">
-        <label>Background:</label>
-        <input type="color" id="bg-color" class="color-picker" value="#000000">
+    <div class="card">
+        <h1>Custom QR Generator</h1>
+        
+        <div class="input-group">
+            <label>Enter URL or Text:</label>
+            <input type="text" id="qrText" value="https://Dilshan-all-in-one-production.up.railway.app" placeholder="Enter link...">
+        </div>
+
+        <div class="color-pickers">
+            <div>
+                <label>QR Color:</label>
+                <input type="color" id="qrColor" value="#00f0ff">
+            </div>
+            <div>
+                <label>Background:</label>
+                <input type="color" id="bgColor" value="#ffffff">
+            </div>
+        </div>
+
+        <button class="btn" onclick="generateQR()">Generate QR Code</button>
+
+        <div id="qrcode"></div>
+
+        <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code</button>
+
+        <a href="/" class="back-link">← Back to Home</a>
     </div>
-    <span style="font-size: 12px; color: #8ab4f8;">Add Logo/Image in Center (Optional):</span>
-    <input type="file" id="logo-file" accept="image/*" class="input-field" style="margin-top:5px;">
-    <button class="btn" onclick="generateCustomQR()">Generate QR Code</button>
-    <div id="canvas-container"></div>
-    <div class="footer">© Powered by Dilshan</div>
-</div>
-<script>
-    let qrCode;
-    function generateCustomQR() {
-        const text = document.getElementById('qr-text').value.trim();
-        if (!text) { alert("Please enter text or URL!"); return; }
-        const dotsColor = document.getElementById('dots-color').value;
-        const bgColor = document.getElementById('bg-color').value;
-        const logoFile = document.getElementById('logo-file').files[0];
-        const container = document.getElementById('canvas-container');
-        container.innerHTML = "";
-        const options = {
-            width: 200, height: 200, type: "svg", data: text,
-            dotsOptions: { color: dotsColor, type: "rounded" },
-            backgroundOptions: { color: bgColor }
-        };
-        if (logoFile) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                options.image = e.target.result;
-                qrCode = new QRCodeStyling(options);
-                qrCode.append(container);
-            };
-            reader.readAsDataURL(logoFile);
-        } else {
-            qrCode = new QRCodeStyling(options);
-            qrCode.append(container);
+
+    <script>
+        let qrCodeInstance = null;
+
+        function generateQR() {
+            let text = document.getElementById('qrText').value.trim();
+            let fgColor = document.getElementById('qrColor').value;
+            let bgColor = document.getElementById('bgColor').value;
+
+            if (!text) {
+                alert("Please enter text or URL!");
+                return;
+            }
+
+            document.getElementById('qrcode').innerHTML = "";
+
+            qrCodeInstance = new QRCode(document.getElementById('qrcode'), {
+                text: text,
+                width: 200,
+                height: 200,
+                colorDark: fgColor,
+                colorLight: bgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('downloadBtn').style.display = 'block';
         }
-    }
-</script>
+
+        function downloadQR() {
+            let img = document.querySelector('#qrcode img');
+            if (!img) {
+                let canvas = document.querySelector('#qrcode canvas');
+                if (canvas) {
+                    img = canvas.toDataURL("image/png");
+                }
+            }
+
+            if (img) {
+                let link = document.createElement('a');
+                link.href = typeof img === 'string' ? img : img.src;
+                link.download = 'Dilshan-Custom-QR.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("QR Code image not found! Please generate first.");
+            }
+        }
+
+        // Auto generate on load
+        window.onload = function() {
+            generateQR();
+        };
+    </script>
 </body>
 </html>
