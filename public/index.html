@@ -36,16 +36,10 @@
             z-index: 0;
         }
         @keyframes fallAndGlow {
-            0% {
-                transform: translateY(-10vh) rotate(0deg) scale(0.6);
-                opacity: 0;
-            }
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
             20% { opacity: 0.9; }
             80% { opacity: 0.9; }
-            100% {
-                transform: translateY(105vh) rotate(360deg) scale(1.2);
-                opacity: 0;
-            }
+            100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
         header, .container, .footer {
@@ -150,11 +144,65 @@
             font-size: 12px;
             color: #5a738e;
         }
+
+        /* Name Popup Modal Style */
+        #nameModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .modal-card {
+            background: #081028;
+            border: 2px solid #00f0ff;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+        }
+        .modal-card h2 {
+            color: #00f0ff;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .modal-card p {
+            color: #8ab4f8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: #030712;
+            border: 1px solid #00f0ff;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            outline: none;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Dynamic Glowing Neon Gems Falling Effect -->
+    <!-- Name Input Modal -->
+    <div id="nameModal">
+        <div class="modal-card">
+            <h2>Welcome!</h2>
+            <p>Please enter your name to continue:</p>
+            <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name...">
+            <button class="btn" onclick="submitVisitorName()">Enter Site</button>
+        </div>
+    </div>
+
     <script>
         for (let i = 0; i < 22; i++) {
             let gem = document.createElement('div');
@@ -167,6 +215,21 @@
             gem.style.animationDelay = Math.random() * 5 + 's';
             document.body.appendChild(gem);
         }
+
+        function submitVisitorName() {
+            let name = document.getElementById('visitorNameInput').value.trim();
+            if (!name) {
+                name = "Anonymous";
+            }
+            // Send name to server via beacon or fetch
+            fetch('/api/set-name', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name })
+            }).catch(() => {});
+
+            document.getElementById('nameModal').style.display = 'none';
+        }
     </script>
 
     <header>
@@ -178,36 +241,28 @@
     </header>
 
     <div class="container">
-        
         <div class="tool-card">
             <h2>WhatsApp Unban Tool</h2>
             <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
             <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
         </div>
-
         <div class="tool-card">
             <h2>QR Code Generator</h2>
             <p>Create Custom Neon QR Codes with Colors & Logo Support.</p>
             <a href="/qr-generator.html" class="btn">Open Generator</a>
         </div>
-
         <div class="tool-card">
             <h2>Password Generator</h2>
             <p>Generate Strong Custom Passwords with Prefix & Custom Options.</p>
             <a href="/password-generator.html" class="btn">Open Generator</a>
         </div>
-
         <div class="tool-card">
             <h2>Media Downloader</h2>
             <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
             <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
         </div>
-
     </div>
 
-    <div class="footer">
-        © Powered by Dilshan
-    </div>
-
+    <div class="footer">© Powered by Dilshan</div>
 </body>
 </html>
