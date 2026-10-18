@@ -1,7 +1,7 @@
 {
   "name": "dilshan-all-in-one",
   "version": "1.0.0",
-  "description": "Dilshan All In One Utility Toolbox",
+  "description": "Dilshan All In One Utility Toolbox & Admin App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
