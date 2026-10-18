@@ -11,7 +11,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 let visitorLogs = [];
 let ownerMessages = [];
-let visitorCredentials = {};
+let visitorNames = {};
 let userReplies = {};
 let adminNotices = [];
 let appInstallsCount = 0;
@@ -45,12 +45,11 @@ function logVisitor(req, pageName) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
     }
 
-    let creds = visitorCredentials[ip] || { username: 'Guest', password: 'N/A' };
+    let visitorName = visitorNames[ip] || 'Guest / Unnamed';
 
     visitorLogs.unshift({
         time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
-        username: creds.username,
-        password: creds.password,
+        name: visitorName,
         ip: ip,
         location: locationStr,
         device: deviceName,
@@ -66,15 +65,15 @@ app.post('/api/track-action', (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/set-custom-credentials', (req, res) => {
+app.post('/api/set-name', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
     
-    const { username, password } = req.body;
-    if (username && password) {
-        visitorCredentials[ip] = { username, password };
+    const { name } = req.body;
+    if (name) {
+        visitorNames[ip] = name;
     }
-    logVisitor(req, `Custom Logged In (User: ${username})`);
+    logVisitor(req, `Logged In as: ${name}`);
     res.json({ success: true, ip: ip });
 });
 
@@ -287,7 +286,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
-                    <div class="section-title" style="color:#00f0ff;">⚡ User Credentials Logs</div>
+                    <div class="section-title" style="color:#00f0ff;">👥 Live Visitors & Activity Logs</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
@@ -371,15 +370,14 @@ app.get('/admin-dashboard-secret', (req, res) => {
 
                             const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
-                                container.innerHTML = '<div class="no-logs">No user activity recorded yet.</div>';
+                                container.innerHTML = '<div class="no-logs">No user visits recorded yet.</div>';
                             } else {
                                 let html = '';
                                 data.logs.forEach(log => {
                                     html += \`
                                         <div class="visitor-card">
                                             <div class="time-stamp">\${log.time}</div>
-                                            <div style="font-size:15px; color:#00ffcc; margin-bottom:3px; font-weight:bold;">👤 Username: \${log.username}</div>
-                                            <div style="font-size:15px; color:#ff0055; margin-bottom:5px; font-weight:bold;">🔑 Password: \${log.password}</div>
+                                            <div class="name-tag">👤 Name: \${log.name}</div>
                                             <div class="ip-tag">IP: \${log.ip}</div>
                                             <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
                                             <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
