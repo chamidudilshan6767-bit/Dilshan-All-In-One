@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="cyberBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="100%" stop-color="#020c1b"/>
+    </radialGradient>
+
+    <!-- Glowing Neon Blue Gradient -->
+    <linearGradient id="neonBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="50%" stop-color="#0088ff"/>
+      <stop offset="100%" stop-color="#0044ff"/>
+    </linearGradient>
+
+    <!-- Intense Neon Glow Filter -->
+    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Dark Cyber Circle -->
+  <circle cx="250" cy="250" r="230" fill="url(#cyberBg)" stroke="#00f0ff" stroke-width="4" filter="url(#neonGlow)"/>
+
+  <!-- Rotating Tech Ring Borders -->
+  <circle cx="250" cy="250" r="200" fill="none" stroke="#0088ff" stroke-width="2" stroke-dasharray="12, 10, 5, 10" opacity="0.6"/>
+  <circle cx="250" cy="250" r="175" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="40, 15, 10, 15"/>
+
+  <!-- Futuristic Cyber Shield Frame -->
+  <path d="M250 80 L340 130 L340 260 C340 330 250 390 250 390 C250 390 160 330 160 260 L160 130 Z" 
+        fill="none" stroke="url(#neonBlue)" stroke-width="6" filter="url(#neonGlow)"/>
+
+  <!-- Inner Cyber Crown / W Symbol -->
+  <path d="M200 180 L225 250 L250 200 L275 250 L300 180 M210 280 L250 320 L290 280" 
+        fill="none" stroke="#00f0ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonGlow)"/>
+
+  <!-- Central Glowing Energy Gem -->
+  <polygon points="250,150 262,170 250,190 238,170" fill="#00f0ff" filter="url(#neonGlow)"/>
+
+  <!-- Glowing Tech Dots -->
+  <circle cx="160" cy="130" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+  <circle cx="340" cy="130" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+  <circle cx="250" cy="390" r="6" fill="#00f0ff" filter="url(#neonGlow)"/>
+
+  <!-- Logo Title Text -->
+  <text x="50%" y="87%" text-anchor="middle" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#00f0ff" filter="url(#neonGlow)" letter-spacing="6">DILSHAN AIO</text>
+</svg>
