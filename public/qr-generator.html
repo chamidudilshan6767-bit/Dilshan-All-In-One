@@ -40,7 +40,6 @@
         #qrcode { margin: 20px auto; display: none; justify-content: center; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; }
         .footer-text { margin-top: 20px; font-size: 12px; color: #5a738e; }
     </style>
-    <!-- QR Code Generator Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -70,7 +69,7 @@
 
         <div id="qrcode"></div>
 
-        <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code</button>
+        <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code as Image</button>
 
         <div class="footer-text">© Powered by Dilshan</div>
     </div>
@@ -92,8 +91,8 @@
 
             new QRCode(qrContainer, {
                 text: text,
-                width: 200,
-                height: 200,
+                width: 250,
+                height: 250,
                 colorDark: fgColor,
                 colorLight: bgColor,
                 correctLevel: QRCode.CorrectLevel.H
@@ -103,23 +102,27 @@
         }
 
         function downloadQR() {
-            let img = document.querySelector('#qrcode img');
-            if (!img) {
-                let canvas = document.querySelector('#qrcode canvas');
-                if (canvas) {
-                    img = canvas.toDataURL("image/png");
-                }
+            let qrContainer = document.getElementById('qrcode');
+            let img = qrContainer.querySelector('img');
+            let canvas = qrContainer.querySelector('canvas');
+
+            let imageURL = "";
+
+            if (canvas) {
+                imageURL = canvas.toDataURL("image/png");
+            } else if (img && img.src) {
+                imageURL = img.src;
             }
 
-            if (img) {
+            if (imageURL) {
                 let link = document.createElement('a');
-                link.href = typeof img === 'string' ? img : img.src;
-                link.download = 'Dilshan-Custom-QR.png';
+                link.href = imageURL;
+                link.download = 'Dilshan-QR-Code.png';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             } else {
-                alert("QR Code image not found! Please generate first.");
+                alert("QR Code image not generated yet!");
             }
         }
     </script>
