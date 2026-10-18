@@ -31,61 +31,6 @@
             max-width: 450px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
-        /* Lock Screen */
-        #lock-screen {
-            text-align: center;
-        }
-        .input-wrapper {
-            position: relative;
-            margin: 15px 0;
-        }
-        .input-field {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #2a364f;
-            background: #0b0e14;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-        }
-        .show-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: #00c6ff;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #8a99ad;
-            cursor: pointer;
-        }
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(90deg, #0072ff, #00c6ff);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn:hover { opacity: 0.9; }
-
-        /* Main Content List */
-        #main-content { display: none; }
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -157,106 +102,54 @@
 <body>
 
 <div class="card">
-    
-    <!-- Lock Screen -->
-    <div id="lock-screen">
-        <div style="font-size: 35px; margin-bottom: 5px;">🔒</div>
-        <h2 style="color: #00c6ff; font-size: 1.3rem;">Protected Access</h2>
-        <p style="color: #8a99ad; font-size: 13px; margin-top: 5px;">Please enter password to unlock</p>
-        
-        <div class="input-wrapper">
-            <input type="password" id="pass-input" class="input-field" placeholder="Enter Password">
-            <button class="show-btn" onclick="togglePasswordVisibility()">Show</button>
+    <header>
+        <img src="/logo.png" alt="Logo" class="logo-img">
+        <h1>Dilshan All In One</h1>
+        <p>Your ultimate utility toolbox</p>
+    </header>
+
+    <div class="container">
+        <!-- TikTok Downloader -->
+        <div class="tool-card">
+            <div class="tool-info">
+                <h2>TikTok Downloader</h2>
+                <p>1080p, 720p & MP3 (No Watermark)</p>
+            </div>
+            <a href="/tiktok-downloader.html" class="btn-open">Open</a>
         </div>
 
-        <label class="checkbox-container">
-            <input type="checkbox" id="remember-me"> Remember Password
-        </label>
-
-        <button class="btn" onclick="checkPassword()">Unlock</button>
-        <p id="error-msg" style="color: #ff4d4d; font-size: 13px; margin-top: 10px; display: none;">Invalid Password!</p>
-    </div>
-
-    <!-- Main Toolbox List -->
-    <div id="main-content">
-        <header>
-            <img src="/logo.png" alt="Logo" class="logo-img">
-            <h1>Dilshan All In One</h1>
-            <p>Your ultimate utility toolbox</p>
-        </header>
-
-        <div class="container">
-            <!-- TikTok Downloader -->
-            <div class="tool-card">
-                <div class="tool-info">
-                    <h2>TikTok Downloader</h2>
-                    <p>1080p, 720p & MP3 (No Watermark)</p>
-                </div>
-                <a href="/tiktok-downloader.html" class="btn-open">Open</a>
+        <!-- Custom QR Code Generator -->
+        <div class="tool-card">
+            <div class="tool-info">
+                <h2>Custom QR Generator</h2>
+                <p>Colors & Logo/Image Support</p>
             </div>
-
-            <!-- QR Code Generator -->
-            <div class="tool-card">
-                <div class="tool-info">
-                    <h2>QR Code Generator</h2>
-                    <p>Create custom QR codes easily</p>
-                </div>
-                <a href="/qr-generator.html" class="btn-open">Open</a>
-            </div>
-
-            <!-- Password Generator -->
-            <div class="tool-card">
-                <div class="tool-info">
-                    <h2>Password Generator</h2>
-                    <p>Generate secure random passwords</p>
-                </div>
-                <a href="/password-generator.html" class="btn-open">Open</a>
-            </div>
-
-            <!-- WhatsApp Unban -->
-            <div class="tool-card">
-                <div class="tool-info">
-                    <h2>WhatsApp Unban</h2>
-                    <p>Generate appeal support email</p>
-                </div>
-                <a href="/whatsapp-unban.html" class="btn-open">Open</a>
-            </div>
+            <a href="/qr-generator.html" class="btn-open">Open</a>
         </div>
 
-        <div class="footer">
-            © Powered by Dilshan | <a href="#" onclick="logout()" style="color: #ff4d4d; text-decoration: none;">Lock</a>
+        <!-- Custom Password Generator -->
+        <div class="tool-card">
+            <div class="tool-info">
+                <h2>Custom Pass Generator</h2>
+                <p>Custom Prefix & Secure Options</p>
+            </div>
+            <a href="/password-generator.html" class="btn-open">Open</a>
+        </div>
+
+        <!-- WhatsApp Unban -->
+        <div class="tool-card">
+            <div class="tool-info">
+                <h2>WhatsApp Unban</h2>
+                <p>Generate appeal support email</p>
+            </div>
+            <a href="/whatsapp-unban.html" class="btn-open">Open</a>
         </div>
     </div>
 
+    <div class="footer">
+        © Powered by Dilshan
+    </div>
 </div>
-
-<script>
-    window.onload = function() {
-        if (localStorage.getItem("unlocked") === "true") {
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        }
-    }
-    function togglePasswordVisibility() {
-        const input = document.getElementById('pass-input');
-        input.type = input.type === "password" ? "text" : "password";
-    }
-    function checkPassword() {
-        const input = document.getElementById('pass-input').value;
-        const remember = document.getElementById('remember-me').checked;
-        if (input === "#dilshan6767#") {
-            if (remember) localStorage.setItem("unlocked", "true");
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        } else {
-            document.getElementById('error-msg').style.display = 'block';
-        }
-    }
-    function logout() {
-        localStorage.removeItem("unlocked");
-        location.reload();
-    }
-</script>
 
 </body>
 </html>
