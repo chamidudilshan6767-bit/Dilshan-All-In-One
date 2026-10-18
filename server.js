@@ -8,13 +8,11 @@ const PORT = process.env.PORT || 3000;
 app.use(useragent.express());
 app.use(express.json());
 
-// Memory-based visitor storage
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
 let userReplies = {};
 
-// Helper function to capture visitor details
 function logVisitor(req, pageName) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -58,7 +56,6 @@ function logVisitor(req, pageName) {
     if (visitorLogs.length > 100) visitorLogs.pop();
 }
 
-// Endpoint to set name and return IP
 app.post('/api/set-name', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -70,7 +67,6 @@ app.post('/api/set-name', (req, res) => {
     res.json({ success: true, ip: ip });
 });
 
-// Endpoint to send message to owner
 app.post('/api/send-owner-message', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -89,7 +85,6 @@ app.post('/api/send-owner-message', (req, res) => {
     res.json({ success: true });
 });
 
-// Endpoint for user to check reply
 app.get('/api/check-reply', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -97,29 +92,34 @@ app.get('/api/check-reply', (req, res) => {
     res.json({ reply: userReplies[ip] || null });
 });
 
-// Routes
+// Explicit Route Tracking for Pages
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/:page', (req, res, next) => {
-    const page = req.params.page;
-    if (page === 'api' || page === 'admin-dashboard-secret') {
-        return next();
-    }
-    const filePath = path.join(__dirname, 'public', page);
-    if (require('fs').existsSync(filePath)) {
-        logVisitor(req, page);
-        res.sendFile(filePath);
-    } else {
-        next();
-    }
+app.get('/qr-generator.html', (req, res) => {
+    logVisitor(req, 'QR Generator Tool');
+    res.sendFile(path.join(__dirname, 'public', 'qr-generator.html'));
+});
+
+app.get('/whatsapp-unban.html', (req, res) => {
+    logVisitor(req, 'WhatsApp Unban Tool');
+    res.sendFile(path.join(__dirname, 'public', 'whatsapp-unban.html'));
+});
+
+app.get('/password-generator.html', (req, res) => {
+    logVisitor(req, 'Password Generator Tool');
+    res.sendFile(path.join(__dirname, 'public', 'password-generator.html'));
+});
+
+app.get('/tiktok-downloader.html', (req, res) => {
+    logVisitor(req, 'Media Downloader Tool');
+    res.sendFile(path.join(__dirname, 'public', 'tiktok-downloader.html'));
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Protected Admin API
 app.post('/api/admin-stats', (req, res) => {
     const { password, replyText, targetIp } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
@@ -140,7 +140,6 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Mobile App Route
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
