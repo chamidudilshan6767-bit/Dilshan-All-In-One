@@ -9,7 +9,6 @@ app.use(useragent.express());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Storage
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
@@ -99,7 +98,6 @@ app.get('/api/get-notices', (req, res) => {
     res.json({ notices: adminNotices });
 });
 
-// Explicit Route Tracking for all pages
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -132,13 +130,19 @@ app.get('/admin-updates.html', (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Protected Admin API
+// Protected Admin API (Stats, Publish, Delete & Replies)
 app.post('/api/admin-stats', (req, res) => {
-    const { password, replyText, targetIp, newNotice, mediaData, mediaType } = req.body;
+    const { password, replyText, targetIp, newNotice, mediaData, mediaType, deleteNoticeId } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
 
     if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
+    }
+
+    // If admin requested to delete a notice/media post
+    if (deleteNoticeId) {
+        adminNotices = adminNotices.filter(n => n.id !== deleteNoticeId);
+        return res.json({ success: true, message: "Deleted successfully!" });
     }
 
     if (newNotice || mediaData) {
@@ -166,7 +170,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Mobile App Route
+// Secret Admin Dashboard Mobile App Route with Delete Button for Published Posts
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -199,6 +203,11 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 
                 .notice-publisher { background: #081226; border: 1px solid #00ffcc; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,255,204,0.2); }
                 .notice-publisher h3 { color: #00ffcc; font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; }
+
+                /* Published items in admin app with delete button */
+                .admin-post-box { background: #050b18; border: 1px solid #00ffcc; border-radius: 10px; padding: 12px; margin-bottom: 10px; position: relative; }
+                .admin-post-box p { font-size: 13px; color: #fff; margin-bottom: 6px; }
+                .delete-btn { background: #ff0055; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
                 .msg-box-admin { background: #1a0814; border: 1px solid #ff0055; border-radius: 12px; padding: 15px; margin-bottom: 12px; position: relative; }
                 .msg-box-admin .time-stamp { font-size: 11px; color: #ff88aa; position: absolute; top: 12px; right: 15px; }
@@ -252,6 +261,9 @@ app.get('/admin-dashboard-secret', (req, res) => {
                         <button class="btn" style="padding:10px; font-size:13px; background:linear-gradient(90deg,#00aa77,#00ffcc); color:#000;" onclick="publishMediaNotice()">Publish to Main Site</button>
                     </div>
 
+                    <div class="section-title" style="color:#00ffcc;">📢 Manage Published Posts</div>
+                    <div id="adminPostsContainer"></div>
+
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
@@ -297,6 +309,24 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             document.getElementById('loginSection').style.display = 'none';
                             document.getElementById('dashSection').style.display = 'block';
                             
+                            // Load Published Posts with Delete Option
+                            const postsContainer = document.getElementById('adminPostsContainer');
+                            if (!data.notices || data.notices.length === 0) {
+                                postsContainer.innerHTML = '<div class="no-logs">No posts published yet.</div>';
+                            } else {
+                                let pHtml = '';
+                                data.notices.forEach(n => {
+                                    pHtml += \`
+                                        <div class="admin-post-box">
+                                            <p><b>[\${n.mediaType.toUpperCase()}]</b> \${n.text || 'Media Post'} (\${n.time})</p>
+                                            <button class="delete-btn" onclick="deletePost(\${n.id})">🗑️ Delete Post</button>
+                                        </div>
+                                    \`;
+                                });
+                                postsContainer.innerHTML = pHtml;
+                            }
+
+                            // Load Messages
                             const msgContainer = document.getElementById('messagesContainer');
                             if (!data.messages || data.messages.length === 0) {
                                 msgContainer.innerHTML = '<div class="no-logs">No messages received yet.</div>';
@@ -318,6 +348,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                 msgContainer.innerHTML = mHtml;
                             }
 
+                            // Load Visitors
                             const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
                                 container.innerHTML = '<div class="no-logs">No visits recorded yet.</div>';
@@ -386,9 +417,29 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             alert("Published successfully to main site!");
                             document.getElementById('noticeInput').value = '';
                             document.getElementById('mediaFile').value = '';
+                            fetchLogs();
                         }
                     } catch(e) {
                         alert("Publish failed!");
+                    }
+                }
+
+                async function deletePost(deleteNoticeId) {
+                    if (!confirm("Are you sure you want to delete this post?")) return;
+
+                    try {
+                        let res = await fetch('/api/admin-stats', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ password: savedPassword, deleteNoticeId })
+                        });
+                        let data = await res.json();
+                        if (data.success) {
+                            alert("Post deleted successfully!");
+                            fetchLogs();
+                        }
+                    } catch(e) {
+                        alert("Failed to delete post!");
                     }
                 }
 
