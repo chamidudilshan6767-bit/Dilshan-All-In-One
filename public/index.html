@@ -34,6 +34,16 @@
         header p { color: #8ab4f8; font-size: 0.9rem; }
         
         .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* Admin Notice Board Box */
+        .notice-board {
+            background: rgba(8, 24, 48, 0.95); border: 1px solid #00ffcc; padding: 18px;
+            border-radius: 16px; box-shadow: 0 0 20px rgba(0, 255, 204, 0.25); display: none;
+        }
+        .notice-board h3 { color: #00ffcc; font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .notice-item { background: #030712; border-left: 3px solid #00ffcc; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; color: #fff; }
+        .notice-time { font-size: 10px; color: #8ab4f8; margin-top: 4px; display: block; }
+
         .tool-card {
             background: rgba(8, 16, 40, 0.9); border: 1px solid #00f0ff; padding: 20px;
             border-radius: 16px; box-shadow: 0 0 18px rgba(0, 240, 255, 0.25); text-align: center;
@@ -111,15 +121,14 @@
             document.body.appendChild(gem);
         }
 
-        // Check if name is already saved in sessionStorage for this tab session
         window.addEventListener('DOMContentLoaded', () => {
             let savedName = sessionStorage.getItem('dilshan_visitor_name');
             if (!savedName) {
                 document.getElementById('nameModal').style.display = 'flex';
             } else {
-                // If already entered in this tab, silently re-send to server just in case
                 sendNameToSever(savedName);
             }
+            fetchAdminNotices();
         });
 
         function submitVisitorName() {
@@ -146,6 +155,28 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name })
             }).catch(() => {});
+        }
+
+        // Fetch Admin Notices
+        async function fetchAdminNotices() {
+            try {
+                let res = await fetch('/api/get-notices');
+                let data = await res.json();
+                if (data.notices && data.notices.length > 0) {
+                    let container = document.getElementById('noticesContainer');
+                    let html = '';
+                    data.notices.forEach(n => {
+                        html += \`
+                            <div class="notice-item">
+                                📢 \${n.text}
+                                <span class="notice-time">\${n.time}</span>
+                            </div>
+                        \`;
+                    });
+                    container.innerHTML = html;
+                    document.getElementById('adminNoticeBoard').style.display = 'block';
+                }
+            } catch(e) {}
         }
 
         async function sendMessageToOwner() {
@@ -197,6 +228,12 @@
     </header>
 
     <div class="container">
+        <!-- Admin Notice Board (Hidden by default until admin posts) -->
+        <div id="adminNoticeBoard" class="notice-board">
+            <h3>📢 Admin Announcements</h3>
+            <div id="noticesContainer"></div>
+        </div>
+
         <div class="tool-card">
             <h2>WhatsApp Unban Tool</h2>
             <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
@@ -210,7 +247,7 @@
         <div class="tool-card">
             <h2>Password Generator</h2>
             <p>Generate Strong Custom Passwords with Prefix & Custom Options.</p>
-            <a href="/password-generator.html" class="btn">Open Generator</a>
+            <a href="/password-generator.html" class="btn`>Open Generator</a>
         </div>
         <div class="tool-card">
             <h2>Media Downloader</h2>
