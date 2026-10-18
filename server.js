@@ -145,7 +145,7 @@ app.get('/admin-updates.html', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/admin-stats', (req, res) => {
-    const { password, replyText, targetIp, newNotice, mediaData, mediaType, deleteNoticeId } = req.body;
+    const { password, replyText, targetIp, newNotice, mediaData, mediaType, postLink, linkButtonText, deleteNoticeId } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
 
     if (password !== ADMIN_PASSWORD) {
@@ -157,13 +157,15 @@ app.post('/api/admin-stats', (req, res) => {
         return res.json({ success: true, message: "Deleted successfully!" });
     }
 
-    if (newNotice || mediaData) {
+    if (newNotice || mediaData || postLink) {
         adminNotices.unshift({
             id: Date.now(),
             time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
             text: newNotice || '',
             mediaType: mediaType || 'text',
-            mediaData: mediaData || null
+            mediaData: mediaData || null,
+            postLink: postLink || null,
+            linkButtonText: linkButtonText || 'Open Link'
         });
         return res.json({ success: true, message: "Published successfully!" });
     }
@@ -267,7 +269,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     </div>
                     
                     <div class="notice-publisher">
-                        <h3>📤 Publish Media / Update to Site</h3>
+                        <h3>📤 Publish Media / Notice / Links</h3>
                         <select id="mediaType">
                             <option value="text">Text Notice Only</option>
                             <option value="image">Image / Photo</option>
@@ -276,8 +278,15 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             <option value="file">Document / File</option>
                         </select>
                         <input type="file" id="mediaFile" style="padding:8px; font-size:12px;">
-                        <textarea id="noticeInput" placeholder="Type caption or message..."></textarea>
-                        <button class="btn" style="padding:10px; font-size:13px; background:linear-gradient(90deg,#00aa77,#00ffcc); color:#000;" onclick="publishMediaNotice()">Publish to Main Site</button>
+                        <textarea id="noticeInput" placeholder="Type caption or description..."></textarea>
+                        
+                        <div style="border-top:1px dashed #00ffcc; margin:10px 0; padding-top:10px;">
+                            <span style="font-size:12px; color:#00ffcc;">🔗 Add Action Button (Optional):</span>
+                            <input type="url" id="postLink" placeholder="Paste URL (e.g. https://t.me/Dilshan7878)...">
+                            <input type="text" id="linkBtnText" placeholder="Button Name (e.g. Join Telegram)...">
+                        </div>
+
+                        <button class="btn" style="padding:10px; font-size:13px; background:linear-gradient(90deg,#00aa77,#00ffcc); color:#000;" onclick="publishMediaNotice()">Publish to Main Feed</button>
                     </div>
 
                     <div class="section-title" style="color:#00ffcc;">📢 Manage Published Posts</div>
@@ -339,8 +348,12 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                 data.notices.forEach(n => {
                                     pHtml += \`
                                         <div class="admin-post-box">
-                                            <p><b>[\${n.mediaType.toUpperCase()}]</b> \${n.text || 'Media Post'} (\${n.time})</p>
-                                            <button class="delete-btn" onclick="deletePost(\${n.id})">🗑️ Delete Post</button>
+                                            <p><b>[\${n.mediaType.toUpperCase()}]</b> \${n.text || 'Post'}</p>
+                                            \${n.postLink ? \`<p style="font-size:11px; color:#00ffcc;">🔗 Link: \${n.postLink} (Btn: \${n.linkButtonText})</p>\` : ''}
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                                                <span style="font-size:10px; color:#8ab4f8;">\${n.time}</span>
+                                                <button class="delete-btn" onclick="deletePost(\${n.id})">🗑️ Delete Post</button>
+                                            </div>
                                         </div>
                                     \`;
                                 });
@@ -399,19 +412,21 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     let type = document.getElementById('mediaType').value;
                     let caption = document.getElementById('noticeInput').value.trim();
                     let fileInput = document.getElementById('mediaFile');
+                    let postLink = document.getElementById('postLink').value.trim();
+                    let linkButtonText = document.getElementById('linkBtnText').value.trim() || 'Open Link';
 
                     if (type !== 'text' && fileInput.files.length === 0) {
                         alert("Please select a file/media to upload!");
                         return;
                     }
 
-                    if (type === 'text' && !caption) {
-                        alert("Please type a notice message!");
+                    if (type === 'text' && !caption && !postLink) {
+                        alert("Please type a message or enter a Link!");
                         return;
                     }
 
                     if (type === 'text') {
-                        sendDataToServer(type, null, caption);
+                        sendDataToServer(type, null, caption, postLink, linkButtonText);
                         return;
                     }
 
@@ -419,23 +434,25 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     let reader = new FileReader();
                     reader.onload = function(e) {
                         let base64Data = e.target.result;
-                        sendDataToServer(type, base64Data, caption);
+                        sendDataToServer(type, base64Data, caption, postLink, linkButtonText);
                     };
                     reader.readAsDataURL(file);
                 }
 
-                async function sendDataToServer(mediaType, mediaData, newNotice) {
+                async function sendDataToServer(mediaType, mediaData, newNotice, postLink, linkButtonText) {
                     try {
                         let res = await fetch('/api/admin-stats', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ password: savedPassword, newNotice, mediaType, mediaData })
+                            body: JSON.stringify({ password: savedPassword, newNotice, mediaType, mediaData, postLink, linkButtonText })
                         });
                         let data = await res.json();
                         if (data.success) {
-                            alert("Published successfully to main site!");
+                            alert("Published successfully to main feed!");
                             document.getElementById('noticeInput').value = '';
                             document.getElementById('mediaFile').value = '';
+                            document.getElementById('postLink').value = '';
+                            document.getElementById('linkBtnText').value = '';
                             fetchLogs();
                         }
                     } catch(e) {
