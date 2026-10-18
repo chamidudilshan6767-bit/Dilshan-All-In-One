@@ -36,7 +36,7 @@
         .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
         
         .install-btn {
-            display: none; width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff);
+            display: block; width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff);
             color: #000; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;
             box-shadow: 0 0 20px rgba(0,240,255,0.6); font-size: 15px; text-transform: uppercase; margin-bottom: 5px;
         }
@@ -136,13 +136,16 @@
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+        }
 
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('installAppBtn').style.display = 'block';
+            const btn = document.getElementById('installAppBtn');
+            if (btn) btn.style.display = 'block';
         });
 
         async function installApp() {
@@ -154,6 +157,8 @@
                     fetch('/api/track-install', { method: 'POST' }).catch(() => {});
                 }
                 deferredPrompt = null;
+            } else {
+                alert("To install this app:\n\n• On Android (Chrome): Tap the 3 dots (⋮) top right -> 'Add to Home screen' or 'Install app'.\n• On iPhone (Safari): Tap Share button -> 'Add to Home Screen'.");
             }
         }
 
