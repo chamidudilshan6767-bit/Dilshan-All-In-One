@@ -8,9 +8,11 @@ const PORT = process.env.PORT || 3000;
 app.use(useragent.express());
 app.use(express.json());
 
-// Memory-based visitor storage
+// Storage
 let visitorLogs = [];
+let ownerMessages = [];
 let visitorNames = {};
+let userReplies = {}; // Stores replies by IP
 
 // Helper function to capture visitor details
 function logVisitor(req, pageName) {
@@ -32,25 +34,14 @@ function logVisitor(req, pageName) {
     
     let ua = req.useragent;
     let userAgentRaw = req.headers['user-agent'] || 'Unknown Agent';
-    
-    // Improved Device String Detection
     let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
     
     if (!ua.platform && !ua.os && !ua.browser || deviceName.includes('unknown')) {
-        deviceName = userAgentRaw; // Fallback to raw user-agent so it's never completely unknown
+        deviceName = userAgentRaw;
     }
     
-    // Custom checks for popular devices/apps
     if (userAgentRaw.includes('SM-A14') || userAgentRaw.includes('Samsung A14')) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
-    } else if (userAgentRaw.includes('WhatsApp')) {
-        deviceName = 'WhatsApp In-App Browser';
-    } else if (userAgentRaw.includes('Telegram')) {
-        deviceName = 'Telegram In-App Browser';
-    } else if (userAgentRaw.includes('iPhone')) {
-        deviceName = 'Apple iPhone (iOS)';
-    } else if (userAgentRaw.includes('Android')) {
-        deviceName = 'Android Mobile Device';
     }
 
     let visitorName = visitorNames[ip] || 'Guest / Unnamed';
@@ -67,7 +58,7 @@ function logVisitor(req, pageName) {
     if (visitorLogs.length > 100) visitorLogs.pop();
 }
 
-// Endpoint to receive visitor's entered name
+// Endpoint to set name and return IP
 app.post('/api/set-name', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -75,14 +66,35 @@ app.post('/api/set-name', (req, res) => {
     const { name } = req.body;
     if (name) {
         visitorNames[ip] = name;
-        for (let log of visitorLogs) {
-            if (log.ip === ip) {
-                log.name = name;
-                break;
-            }
-        }
+    }
+    res.json({ success: true, ip: ip });
+});
+
+// Endpoint to send message to owner
+app.post('/api/send-owner-message', (req, res) => {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    if (ip.includes(',')) ip = ip.split(',')[0].trim();
+
+    const { username, message } = req.body;
+    if (username && message) {
+        ownerMessages.unshift({
+            id: Date.now(),
+            time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
+            ip: ip,
+            username: username,
+            message: message
+        });
+        if (ownerMessages.length > 50) ownerMessages.pop();
     }
     res.json({ success: true });
+});
+
+// Endpoint for user to check reply
+app.get('/api/check-reply', (req, res) => {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    if (ip.includes(',')) ip = ip.split(',')[0].trim();
+
+    res.json({ reply: userReplies[ip] || null });
 });
 
 // Routes
@@ -107,18 +119,25 @@ app.get('/:page', (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Protected Admin API
+// Protected Admin API (Stats + Messages + Reply Sender)
 app.post('/api/admin-stats', (req, res) => {
-    const { password } = req.body;
+    const { password, replyText, targetIp } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
 
     if (password !== ADMIN_PASSWORD) {
-        return res.status(401).json({ success: false, error: "Unauthorized! Incorrect Password." });
+        return res.status(401).json({ success: false, error: "Unauthorized!" });
+    }
+
+    // If admin sent a reply
+    if (replyText && targetIp) {
+        userReplies[targetIp] = replyText;
+        return res.json({ success: true, message: "Reply sent!" });
     }
 
     res.json({
         success: true,
-        logs: visitorLogs
+        logs: visitorLogs,
+        messages: ownerMessages
     });
 });
 
@@ -150,13 +169,24 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
                 .refresh-btn { padding: 8px 16px; background: #00f0ff; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
                 
-                .visitor-card { background: #081028; border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 0 15px rgba(0,240,255,0.15); position: relative; }
+                .section-title { font-size: 15px; font-weight: bold; margin: 20px 0 10px 0; text-transform: uppercase; }
+                
+                .msg-box-admin { background: #1a0814; border: 1px solid #ff0055; border-radius: 12px; padding: 15px; margin-bottom: 12px; position: relative; }
+                .msg-box-admin .time-stamp { font-size: 11px; color: #ff88aa; position: absolute; top: 12px; right: 15px; }
+                .msg-box-admin .user-tag { font-size: 15px; font-weight: bold; color: #ff0055; margin-bottom: 4px; }
+                .msg-box-admin .msg-body { font-size: 14px; color: #fff; background: #080206; padding: 10px; border-radius: 8px; margin: 8px 0; }
+                
+                .reply-input-group { display: flex; gap: 8px; margin-top: 8px; }
+                .reply-input-group input { margin: 0; padding: 8px; font-size: 13px; text-align: left; }
+                .reply-input-group button { width: auto; padding: 8px 14px; font-size: 13px; background: #00ffcc; color: #000; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
+
+                .visitor-card { background: #081028; border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 12px; position: relative; }
                 .visitor-card .time-stamp { font-size: 11px; color: #8ab4f8; position: absolute; top: 12px; right: 15px; }
                 .visitor-card .name-tag { font-size: 16px; font-weight: bold; color: #00ffcc; margin-bottom: 4px; }
-                .visitor-card .ip-tag { font-size: 13px; color: #ff0055; margin-bottom: 6px; word-break: break-all; }
-                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: flex-start; gap: 6px; word-break: break-all; }
-                .info-row span { color: #00f0ff; font-weight: bold; min-width: 70px; }
-                .no-logs { text-align: center; padding: 20px; color: #8ab4f8; font-size: 14px; }
+                .visitor-card .ip-tag { font-size: 13px; color: #ff0055; margin-bottom: 6px; }
+                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; gap: 6px; }
+                .info-row span { color: #00f0ff; font-weight: bold; }
+                .no-logs { text-align: center; padding: 15px; color: #8ab4f8; font-size: 13px; background: #081028; border-radius: 10px; }
             </style>
         </head>
         <body>
@@ -175,18 +205,20 @@ app.get('/admin-dashboard-secret', (req, res) => {
 
                 <div id="dashSection" style="display:none;">
                     <div class="dash-header">
-                        <span style="font-size:14px; color:#00f0ff;">Live Visitors Log (Auto 5s)</span>
+                        <span style="font-size:14px; color:#00f0ff;">Live Dashboard (Auto 5s)</span>
                         <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
                     </div>
                     
+                    <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
+                    <div id="messagesContainer"></div>
+
+                    <div class="section-title" style="color:#00f0ff;">👥 Live Visitors Log</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
 
             <script>
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('/sw.js');
-                }
+                if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
                 let deferredPrompt;
                 let savedPassword = '';
@@ -202,9 +234,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
-                        if (outcome === 'accepted') {
-                            installBtn.style.display = 'none';
-                        }
+                        if (outcome === 'accepted') installBtn.style.display = 'none';
                         deferredPrompt = null;
                     }
                 });
@@ -224,9 +254,32 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             document.getElementById('loginSection').style.display = 'none';
                             document.getElementById('dashSection').style.display = 'block';
                             
+                            // Load Messages
+                            const msgContainer = document.getElementById('messagesContainer');
+                            if (!data.messages || data.messages.length === 0) {
+                                msgContainer.innerHTML = '<div class="no-logs">No messages received yet.</div>';
+                            } else {
+                                let mHtml = '';
+                                data.messages.forEach(m => {
+                                    mHtml += \`
+                                        <div class="msg-box-admin">
+                                            <div class="time-stamp">\${m.time}</div>
+                                            <div class="user-tag">👤 \${m.username} <span style="font-size:11px; color:#ff88aa;">(IP: \${m.ip})</span></div>
+                                            <div class="msg-body">💬 \${m.message}</div>
+                                            <div class="reply-input-group">
+                                                <input type="text" id="reply_\${m.id}" placeholder="Type reply here...">
+                                                <button onclick="sendReply('\${m.ip}', 'reply_\${m.id}')">Send Reply</button>
+                                            </div>
+                                        </div>
+                                    \`;
+                                });
+                                msgContainer.innerHTML = mHtml;
+                            }
+
+                            // Load Visitors
                             const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
-                                container.innerHTML = '<div class="no-logs">No visits recorded yet. Open main site in new tab!</div>';
+                                container.innerHTML = '<div class="no-logs">No visits recorded yet.</div>';
                             } else {
                                 let html = '';
                                 data.logs.forEach(log => {
@@ -251,6 +304,29 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     }
                 }
 
+                async function sendReply(targetIp, inputId) {
+                    let replyText = document.getElementById(inputId).value.trim();
+                    if (!replyText) {
+                        alert("Please type a reply message!");
+                        return;
+                    }
+
+                    try {
+                        let res = await fetch('/api/admin-stats', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ password: savedPassword, replyText, targetIp })
+                        });
+                        let data = await res.json();
+                        if (data.success) {
+                            alert("Reply sent successfully to the user!");
+                            document.getElementById(inputId).value = '';
+                        }
+                    } catch(e) {
+                        alert("Failed to send reply!");
+                    }
+                }
+
                 setInterval(() => {
                     if(document.getElementById('dashSection').style.display === 'block') {
                         fetchLogs();
@@ -263,5 +339,5 @@ app.get('/admin-dashboard-secret', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port `${PORT});
 });
