@@ -7,8 +7,19 @@
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #030712; color: #fff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+        body { 
+            background-color: #030712; 
+            color: #fff; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative; 
+        }
         
+        /* Neon Blue Falling Gems */
         .neon-gem {
             position: fixed;
             background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
@@ -26,15 +37,54 @@
             100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        .card { width: 100%; max-width: 450px; background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.35); z-index: 1; position: relative; backdrop-filter: blur(8px); }
+        .card { 
+            width: 100%; 
+            max-width: 450px; 
+            background: rgba(8, 16, 40, 0.95); 
+            border: 1px solid #00f0ff; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.35); 
+            z-index: 1; 
+            position: relative; 
+            backdrop-filter: blur(8px); 
+        }
         .back-link { display: inline-block; margin-bottom: 15px; color: #00f0ff; text-decoration: none; font-weight: bold; font-size: 14px; }
         h2 { text-align: center; color: #00f0ff; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
-        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #0a4f8a; background: #050b18; color: #fff; font-size: 15px; outline: none; margin-bottom: 12px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 0 12px rgba(0,240,255,0.6); }
+        .label-title { font-size: 12px; color: #8ab4f8; margin-bottom: 5px; display: block; font-weight: bold; }
+        .input-field { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid #0a4f8a; 
+            background: #050b18; 
+            color: #fff; 
+            font-size: 14px; 
+            outline: none; 
+            margin-bottom: 14px; 
+        }
+        .input-field:focus { border-color: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
+        select.input-field { cursor: pointer; }
+        textarea.input-field { resize: vertical; min-height: 80px; }
+        .btn { 
+            width: 100%; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 8px; 
+            background: linear-gradient(90deg, #0072ff, #00f0ff); 
+            color: #000; 
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 0 12px rgba(0,240,255,0.6); 
+            text-transform: uppercase;
+        }
+        .btn:hover { box-shadow: 0 0 20px rgba(0, 240, 255, 0.9); transform: scale(1.01); }
         .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #5a738e; }
     </style>
 </head>
 <body>
+
 <script>
     for (let i = 0; i < 15; i++) {
         let gem = document.createElement('div');
@@ -51,18 +101,73 @@
 
 <div class="card">
     <a href="/" class="back-link">&larr; Back to Home</a>
-    <h2>WhatsApp Unban Appeal</h2>
-    <input type="text" id="wa-number" class="input-field" placeholder="Enter Banned Phone Number (+94...)">
-    <button class="btn" onclick="sendUnbanAppeal()">Send Appeal Email</button>
+    <h2>Custom WhatsApp Unban</h2>
+    
+    <span class="label-title">Banned Phone Number:</span>
+    <input type="text" id="wa-number" class="input-field" placeholder="e.g. +94771234567">
+
+    <span class="label-title">Your Contact Email Address:</span>
+    <input type="email" id="user-email" class="input-field" placeholder="e.g. yourname@gmail.com">
+
+    <span class="label-title">Select Appeal Reason / Type:</span>
+    <select id="appeal-type" class="input-field" onchange="toggleCustomReason()">
+        <option value="standard">Standard Appeal (Unban Request)</option>
+        <option value="system_error">Banned by System Error (Accidental Ban)</option>
+        <option value="urgent_business">Urgent Business / Personal Contact</option>
+        <option value="custom">Custom Message (Type Below)</option>
+    </select>
+
+    <div id="custom-reason-box" style="display: none;">
+        <span class="label-title">Write Custom Reason:</span>
+        <textarea id="custom-reason-text" class="input-field" placeholder="Enter your custom message to WhatsApp support..."></textarea>
+    </div>
+
+    <button class="btn" onclick="sendCustomUnbanAppeal()">Generate & Send Email</button>
+    
     <div class="footer">© Powered by Dilshan</div>
 </div>
+
 <script>
-    function sendUnbanAppeal() {
+    function toggleCustomReason() {
+        const selectedType = document.getElementById('appeal-type').value;
+        const customBox = document.getElementById('custom-reason-box');
+        if (selectedType === 'custom') {
+            customBox.style.display = 'block';
+        } else {
+            customBox.style.display = 'none';
+        }
+    }
+
+    function sendCustomUnbanAppeal() {
         const num = document.getElementById('wa-number').value.trim();
-        if (!num) { alert("Please enter your banned phone number!"); return; }
-        const subject = encodeURIComponent("Banned WhatsApp Account Appeal");
-        const body = encodeURIComponent(`Hello WhatsApp Support,\n\nMy WhatsApp number (${num}) has been banned by mistake. Please unban my account.\n\nThank you.`);
-        window.location.href = `mailto:support@whatsapp.com?subject=${subject}&body=${body}`;
+        const userEmail = document.getElementById('user-email').value.trim();
+        const appealType = document.getElementById('appeal-type').value;
+        const customText = document.getElementById('custom-reason-text').value.trim();
+
+        if (!num) {
+            alert("Please enter the banned phone number!");
+            return;
+        }
+
+        let subject = "Appeal to Unban Banned WhatsApp Account";
+        let bodyContent = "";
+
+        if (appealType === 'standard') {
+            bodyContent = `Hello WhatsApp Support Team,\n\nMy WhatsApp number (${num}) has been banned from using WhatsApp.\nI always follow the WhatsApp Terms of Service and believe this ban was placed by mistake.\n\nPlease review my account and unban my number as soon as possible.\n\nPhone Number: ${num}\nUser Email: ${userEmail || 'Not Specified'}\n\nThank you for your support.`;
+        } else if (appealType === 'system_error') {
+            bodyContent = `Dear WhatsApp Support,\n\nI suddenly lost access to my WhatsApp account with number (${num}).\nI have not violated any policies, and I suspect this is a system detection error.\n\nKindly check my account records and restore my access.\n\nBanned Number: ${num}\nContact Email: ${userEmail || 'Not Specified'}\n\nBest regards.`;
+        } else if (appealType === 'urgent_business') {
+            bodyContent = `Urgent Assistance Required - Banned Number (${num})\n\nRespected WhatsApp Team,\nMy primary contact number (${num}) is currently banned. I rely on this number for essential daily communication and work.\n\nI request you to kindly re-evaluate my account status and unblock my service immediately.\n\nPhone Number: ${num}\nEmail: ${userEmail || 'Not Specified'}\n\nThank you in advance.`;
+        } else if (appealType === 'custom') {
+            if (!customText) {
+                alert("Please write your custom message!");
+                return;
+            }
+            bodyContent = `Hello WhatsApp Support,\n\n${customText}\n\nBanned Number: ${num}\nContact Email: ${userEmail || 'Not Specified'}\n\nThank you.`;
+        }
+
+        const mailtoUrl = `mailto:support@whatsapp.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+        window.location.href = mailtoUrl;
     }
 </script>
 </body>
