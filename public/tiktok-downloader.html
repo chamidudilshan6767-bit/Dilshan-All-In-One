@@ -6,48 +6,65 @@
     <title>TikTok Downloader - Dilshan All In One</title>
     <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .card { width: 100%; max-width: 450px; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); }
-        .back-link { display: inline-block; margin-bottom: 15px; color: #128c7e; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .logo-container { display: flex; justify-content: center; margin-bottom: 12px; }
-        .main-logo-box { width: 75px; height: 75px; border-radius: 16px; background: #ffffff; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .main-logo-box img { width: 50px; height: 50px; object-fit: contain; }
-        h2 { text-align: center; color: #075e54; font-size: 1.4rem; margin-bottom: 5px; }
-        p.subtitle { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 20px; }
-        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; color: #333; font-size: 15px; outline: none; margin-bottom: 12px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #25d366; color: white; font-size: 15px; font-weight: bold; cursor: pointer; }
-        .btn:hover { background: #1ebd56; }
-        #result-section { display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-        .video-preview { width: 100%; border-radius: 10px; max-height: 280px; object-fit: cover; margin-bottom: 10px; }
-        .video-desc { font-size: 0.9rem; color: #444; margin-bottom: 12px; word-break: break-word; }
-        .quality-title { font-size: 0.9rem; color: #666; margin-bottom: 8px; font-weight: bold; }
-        .dl-btn { display: block; width: 100%; padding: 11px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: bold; color: white; margin-bottom: 8px; font-size: 0.9rem; }
-        .btn-1080 { background: #22c55e; }
-        .btn-720 { background: #3b82f6; }
-        .btn-watermark { background: #f97316; }
-        .btn-audio { background: #a855f7; }
-        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #888; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #030712; color: #fff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+        
+        .neon-gem {
+            position: fixed;
+            background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
+            box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff;
+            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: fallAndGlow linear infinite;
+            z-index: 0;
+        }
+        @keyframes fallAndGlow {
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
+            20% { opacity: 0.9; }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .card { width: 100%; max-width: 450px; background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.35); z-index: 1; position: relative; backdrop-filter: blur(8px); }
+        .back-link { display: inline-block; margin-bottom: 15px; color: #00f0ff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        h2 { text-align: center; color: #00f0ff; font-size: 1.4rem; margin-bottom: 15px; text-transform: uppercase; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #0a4f8a; background: #050b18; color: #fff; font-size: 15px; outline: none; margin-bottom: 12px; }
+        .input-field:focus { border-color: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 0 12px rgba(0,240,255,0.6); }
+        #result-section { display: none; margin-top: 20px; border-top: 1px solid #0a4f8a; padding-top: 15px; }
+        .video-preview { width: 100%; border-radius: 10px; max-height: 280px; object-fit: cover; margin-bottom: 10px; border: 1px solid #00f0ff; }
+        .dl-btn { display: block; width: 100%; padding: 11px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: bold; color: #000; margin-bottom: 8px; font-size: 0.9rem; background: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.5); }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #5a738e; }
     </style>
 </head>
 <body>
+<script>
+    for (let i = 0; i < 15; i++) {
+        let gem = document.createElement('div');
+        gem.className = 'neon-gem';
+        let size = Math.random() * 8 + 6 + 'px';
+        gem.style.width = size;
+        gem.style.height = size;
+        gem.style.left = Math.random() * 100 + 'vw';
+        gem.style.animationDuration = Math.random() * 6 + 4 + 's';
+        gem.style.animationDelay = Math.random() * 5 + 's';
+        document.body.appendChild(gem);
+    }
+</script>
+
 <div class="card">
     <a href="/" class="back-link">&larr; Back to Home</a>
-    <div class="logo-container">
-        <div class="main-logo-box"><img src="/logo.png" alt="Logo"></div>
-    </div>
     <h2>TikTok Downloader</h2>
-    <p class="subtitle">Download in 1080p, 720p & MP3 Without Watermark</p>
     <input type="text" id="tiktok-url" class="input-field" placeholder="Paste TikTok Link Here...">
-    <button class="btn" onclick="downloadTikTok()">Download Now</button>
+    <button class="btn" onclick="downloadTikTok()">Download Video</button>
+    
     <div id="result-section">
         <video id="vid-preview" class="video-preview" controls></video>
-        <p id="vid-desc" class="video-desc"></p>
-        <p class="quality-title">Select Quality to Download:</p>
-        <a id="dl-1080" href="#" target="_blank" class="dl-btn btn-1080">Download 1080p Full HD (No Watermark)</a>
-        <a id="dl-720" href="#" target="_blank" class="dl-btn btn-720">Download 720p HD (No Watermark)</a>
-        <a id="dl-watermark" href="#" target="_blank" class="dl-btn btn-watermark">Download Watermark Video</a>
-        <a id="dl-audio" href="#" target="_blank" class="dl-btn btn-audio">Download Audio (MP3)</a>
+        <p id="vid-desc" style="font-size:0.85rem; color:#b0c4de; margin-bottom:12px;"></p>
+        <a id="dl-1080" href="#" target="_blank" class="dl-btn">Download 1080p (No Watermark)</a>
+        <a id="dl-720" href="#" target="_blank" class="dl-btn">Download 720p (No Watermark)</a>
+        <a id="dl-audio" href="#" target="_blank" class="dl-btn" style="background:#a855f7; color:#fff; box-shadow:0 0 12px rgba(168,85,247,0.5);">Download Audio (MP3)</a>
     </div>
     <div class="footer">© Powered by Dilshan</div>
 </div>
@@ -55,25 +72,20 @@
 async function downloadTikTok() {
     const url = document.getElementById('tiktok-url').value.trim();
     if (!url) { alert("Please paste a valid TikTok link!"); return; }
-    alert("Fetching Video... Please wait!");
+    alert("Fetching Video...");
     try {
         const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
         const responseData = await res.json();
         if (responseData && responseData.code === 0 && responseData.data) {
             const data = responseData.data;
             document.getElementById('vid-preview').src = data.play;
-            document.getElementById('vid-desc').innerText = data.title || "TikTok Video";
+            document.getElementById('vid-desc').innerText = data.title || "";
             document.getElementById('dl-1080').href = data.hdplay || data.play;
             document.getElementById('dl-720').href = data.play;
-            document.getElementById('dl-watermark').href = data.wmplay || data.play;
             document.getElementById('dl-audio').href = data.music || "#";
             document.getElementById('result-section').style.display = 'block';
-        } else {
-            alert("Failed to fetch video. Check link and try again.");
-        }
-    } catch (err) {
-        alert("Error downloading video. Try again later.");
-    }
+        } else { alert("Failed to fetch video."); }
+    } catch (err) { alert("Error downloading video."); }
 }
 </script>
 </body>
