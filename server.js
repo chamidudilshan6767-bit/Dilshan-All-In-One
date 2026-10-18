@@ -13,7 +13,7 @@ let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
 let userReplies = {};
-let adminNotices = []; // Stores admin announcements
+let adminNotices = [];
 
 function logVisitor(req, pageName) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
@@ -34,7 +34,7 @@ function logVisitor(req, pageName) {
     
     let ua = req.useragent;
     let userAgentRaw = req.headers['user-agent'] || 'Unknown Agent';
-    let deviceName = `${ua.platform || 'Device'} - ${ua.os \vert{}\vert{} 'OS'} (${ua.browser || 'Browser'})`;
+    let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
     
     if (!ua.platform && !ua.os && !ua.browser || deviceName.includes('unknown')) {
         deviceName = userAgentRaw;
@@ -94,12 +94,10 @@ app.get('/api/check-reply', (req, res) => {
     res.json({ reply: userReplies[ip] || null });
 });
 
-// Endpoint for public site to fetch Admin Notices
 app.get('/api/get-notices', (req, res) => {
     res.json({ notices: adminNotices });
 });
 
-// Explicit Route Tracking for Pages
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -127,7 +125,6 @@ app.get('/tiktok-downloader.html', (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Protected Admin API (Stats, Messages, Replies & Notices)
 app.post('/api/admin-stats', (req, res) => {
     const { password, replyText, targetIp, newNotice } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
@@ -136,7 +133,6 @@ app.post('/api/admin-stats', (req, res) => {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
     }
 
-    // If admin posted a new notice
     if (newNotice) {
         adminNotices.unshift({
             id: Date.now(),
@@ -160,7 +156,6 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Mobile App Route with Notice Publisher Box
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -191,7 +186,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 
                 .section-title { font-size: 15px; font-weight: bold; margin: 20px 0 10px 0; text-transform: uppercase; }
                 
-                /* Notice Publisher Box */
                 .notice-publisher { background: #081226; border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,240,255,0.2); }
                 .notice-publisher h3 { color: #00f0ff; font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; }
 
@@ -233,7 +227,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
                         <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
                     </div>
                     
-                    <!-- Admin Notice Publisher -->
                     <div class="notice-publisher">
                         <h3>📢 Publish Admin Notice</h3>
                         <textarea id="noticeInput" placeholder="Type notice to display on main site..."></textarea>
