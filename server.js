@@ -9,7 +9,6 @@ app.use(useragent.express());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Permanent Data Storage Arrays (No auto-delete/limit applied)
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
@@ -54,10 +53,18 @@ function logVisitor(req, pageName) {
         ip: ip,
         location: locationStr,
         device: deviceName,
-        action: `Visited: ${pageName}`
+        action: pageName
     });
-    // Removed length limit to prevent auto-deleting old visitor logs
 }
+
+// Track User Activity / Action Endpoint
+app.post('/api/track-action', (req, res) => {
+    const { action } = req.body;
+    if (action) {
+        logVisitor(req, action);
+    }
+    res.json({ success: true });
+});
 
 app.post('/api/set-name', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
@@ -67,11 +74,13 @@ app.post('/api/set-name', (req, res) => {
     if (name) {
         visitorNames[ip] = name;
     }
+    logVisitor(req, `Logged In as: ${name}`);
     res.json({ success: true, ip: ip });
 });
 
 app.post('/api/track-install', (req, res) => {
     appInstallsCount++;
+    logVisitor(req, "Installed Main App to Device 📲");
     res.json({ success: true, count: appInstallsCount });
 });
 
@@ -88,7 +97,7 @@ app.post('/api/send-owner-message', (req, res) => {
             username: username,
             message: message
         });
-        // Removed length limit to store all owner messages permanently
+        logVisitor(req, `Sent Owner Message: "${message.substring(0, 30)}..."`);
     }
     res.json({ success: true });
 });
@@ -105,32 +114,32 @@ app.get('/api/get-notices', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    logVisitor(req, 'Home Page (/)');
+    logVisitor(req, 'Visited: Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/qr-generator.html', (req, res) => {
-    logVisitor(req, 'QR Generator Tool');
+    logVisitor(req, 'Visited: QR Generator Tool');
     res.sendFile(path.join(__dirname, 'public', 'qr-generator.html'));
 });
 
 app.get('/whatsapp-unban.html', (req, res) => {
-    logVisitor(req, 'WhatsApp Unban Tool');
+    logVisitor(req, 'Visited: WhatsApp Unban Tool');
     res.sendFile(path.join(__dirname, 'public', 'whatsapp-unban.html'));
 });
 
 app.get('/password-generator.html', (req, res) => {
-    logVisitor(req, 'Password Generator Tool');
+    logVisitor(req, 'Visited: Password Generator Tool');
     res.sendFile(path.join(__dirname, 'public', 'password-generator.html'));
 });
 
 app.get('/tiktok-downloader.html', (req, res) => {
-    logVisitor(req, 'Media Downloader Tool');
+    logVisitor(req, 'Visited: Media Downloader Tool');
     res.sendFile(path.join(__dirname, 'public', 'tiktok-downloader.html'));
 });
 
 app.get('/admin-updates.html', (req, res) => {
-    logVisitor(req, 'Admin Updates Page');
+    logVisitor(req, 'Visited: Admin Updates Page');
     res.sendFile(path.join(__dirname, 'public', 'admin-updates.html'));
 });
 
@@ -144,7 +153,6 @@ app.post('/api/admin-stats', (req, res) => {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
     }
 
-    // Explicit deletion requested by Admin ONLY
     if (deleteNoticeId) {
         adminNotices = adminNotices.filter(n => n.id !== deleteNoticeId);
         return res.json({ success: true, message: "Deleted successfully!" });
@@ -158,7 +166,6 @@ app.post('/api/admin-stats', (req, res) => {
             mediaType: mediaType || 'text',
             mediaData: mediaData || null
         });
-        // Removed length limit to keep published posts indefinitely until admin deletes
         return res.json({ success: true, message: "Published successfully!" });
     }
 
@@ -281,7 +288,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
-                    <div class="section-title" style="color:#00f0ff;">👥 Live Visitors Log</div>
+                    <div class="section-title" style="color:#00f0ff;">⚡ Live User Activity Logs</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
@@ -365,18 +372,18 @@ app.get('/admin-dashboard-secret', (req, res) => {
 
                             const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
-                                container.innerHTML = '<div class="no-logs">No visits recorded yet.</div>';
+                                container.innerHTML = '<div class="no-logs">No user activity recorded yet.</div>';
                             } else {
                                 let html = '';
                                 data.logs.forEach(log => {
                                     html += \`
                                         <div class="visitor-card">
                                             <div class="time-stamp">\${log.time}</div>
-                                            <div class="name-tag">👤 \${log.name}</div>
+                                            <div class="name-tag">👤 User: \${log.name}</div>
                                             <div class="ip-tag">IP: \${log.ip}</div>
                                             <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
                                             <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
-                                            <div class="info-row">⚡ <span>Action:</span> \${log.action}</div>
+                                            <div class="info-row">⚡ <span>User Action:</span> \${log.action}</div>
                                         </div>
                                     \`;
                                 });
