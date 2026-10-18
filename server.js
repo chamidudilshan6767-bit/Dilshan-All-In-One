@@ -1,28 +1,53 @@
 const express = require('express');
 const path = require('path');
-
+const useragent = require('express-useragent');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(useragent.express());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Routes
-const unbanRoutes = require('./routes/unban');
-app.use('/api/unban', unbanRoutes);
+// Store visitor statistics in memory
+let analyticsData = {
+    totalVisitors: 0,
+    devices: {}
+};
 
-// Home route
-app.get('/', (req, res) => {
+// Middleware to track device types and visitor counts
+app.use((req, res, next) => {
+    if (!req.url.includes('.') && !req.url.startsWith('/api/')) {
+        analyticsData.totalVisitors++;
+        
+        let ua = req.useragent;
+        let deviceName = 'Unknown Device';
+
+        if (ua.isMobile) {
+            deviceName = `Mobile - ${ua.platform || 'Phone'} (${ua.os || 'Android/iOS'})`;
+        } else if (ua.isTablet) {
+            deviceName = `Tablet (${ua.os || 'Tablet OS'})`;
+        } else if (ua.isDesktop) {
+            deviceName = `Desktop - ${ua.browser || 'Browser'} (${ua.os || 'Windows/Mac'})`;
+        }
+
+        analyticsData.devices[deviceName] = (analyticsData.devices[deviceName] || 0) + 1;
+    }
+    next();
+});
+
+// Endpoint to view stats in JSON format
+app.get('/api/stats', (req, res) => {
+    res.json({
+        status: "success",
+        totalVisitors: analyticsData.totalVisitors,
+        devicesBreakdown: analyticsData.devices
+    });
+});
+
+// Fallback to index.html
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// WhatsApp Unban Tool page route
-app.get('/whatsapp-unban', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'whatsapp-unban.html'));
-});
-
 app.listen(PORT, () => {
-    console.log(`Dilshan All In One is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
