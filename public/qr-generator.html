@@ -12,9 +12,13 @@
         .card {
             background: rgba(8, 16, 40, 0.95); border: 1px solid #00f0ff; padding: 25px;
             border-radius: 16px; width: 100%; max-width: 450px; text-align: center;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); margin-top: 20px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); margin-top: 20px; position: relative;
         }
-        h1 { color: #00f0ff; font-size: 1.5rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,240,255,0.6); text-transform: uppercase; }
+        
+        .back-link { display: block; text-align: left; margin-bottom: 15px; color: #00f0ff; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+
+        h1 { color: #00f0ff; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,240,255,0.6); text-transform: uppercase; }
         
         .input-group { margin-bottom: 15px; text-align: left; }
         label { display: block; font-size: 0.85rem; color: #8ab4f8; margin-bottom: 5px; text-transform: uppercase; }
@@ -33,10 +37,8 @@
             background: linear-gradient(90deg, #00ffcc, #00aa77); color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.7); display: none; margin-top: 12px;
         }
 
-        #qrcode { margin: 20px auto; display: flex; justify-content: center; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; }
-        
-        .back-link { display: inline-block; margin-top: 20px; color: #8ab4f8; text-decoration: none; font-size: 0.9rem; }
-        .back-link:hover { color: #00f0ff; text-decoration: underline; }
+        #qrcode { margin: 20px auto; display: none; justify-content: center; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; }
+        .footer-text { margin-top: 20px; font-size: 12px; color: #5a738e; }
     </style>
     <!-- QR Code Generator Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -44,11 +46,13 @@
 <body>
 
     <div class="card">
+        <a href="/" class="back-link">← Back to Home</a>
+        
         <h1>Custom QR Generator</h1>
         
         <div class="input-group">
             <label>Enter URL or Text:</label>
-            <input type="text" id="qrText" value="https://Dilshan-all-in-one-production.up.railway.app" placeholder="Enter link...">
+            <input type="text" id="qrText" value="" placeholder="e.g., https://example.com">
         </div>
 
         <div class="color-pickers">
@@ -68,25 +72,25 @@
 
         <button id="downloadBtn" class="btn btn-download" onclick="downloadQR()">📥 Download QR Code</button>
 
-        <a href="/" class="back-link">← Back to Home</a>
+        <div class="footer-text">© Powered by Dilshan</div>
     </div>
 
     <script>
-        let qrCodeInstance = null;
-
         function generateQR() {
             let text = document.getElementById('qrText').value.trim();
             let fgColor = document.getElementById('qrColor').value;
             let bgColor = document.getElementById('bgColor').value;
 
             if (!text) {
-                alert("Please enter text or URL!");
+                alert("Please enter text or URL first!");
                 return;
             }
 
-            document.getElementById('qrcode').innerHTML = "";
+            let qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = "";
+            qrContainer.style.display = "flex";
 
-            qrCodeInstance = new QRCode(document.getElementById('qrcode'), {
+            new QRCode(qrContainer, {
                 text: text,
                 width: 200,
                 height: 200,
@@ -118,11 +122,6 @@
                 alert("QR Code image not found! Please generate first.");
             }
         }
-
-        // Auto generate on load
-        window.onload = function() {
-            generateQR();
-        };
     </script>
 </body>
 </html>
