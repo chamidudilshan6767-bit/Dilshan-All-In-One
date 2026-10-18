@@ -3,87 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Updates & Media - Dilshan All In One</title>
+    <title>Admin Feed - Dilshan All In One</title>
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f0ff">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        .card {
-            background: rgba(8, 16, 40, 0.95); border: 1px solid #00ffcc; padding: 25px;
-            border-radius: 16px; width: 100%; max-width: 450px; text-align: center;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.3); margin-top: 10px; position: relative;
-        }
-        
-        .back-link { display: block; text-align: left; margin-bottom: 15px; color: #00ffcc; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
-        .back-link:hover { text-decoration: underline; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
 
-        h1 { color: #00ffcc; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,255,204,0.6); text-transform: uppercase; }
+        header, .container, .footer { z-index: 1; position: relative; width: 100%; max-width: 480px; }
+        header { text-align: center; margin-bottom: 20px; }
+        header h1 { color: #00f0ff; font-size: 1.6rem; text-shadow: 0 0 12px rgba(0, 240, 255, 0.7); text-transform: uppercase; }
+        header p { color: #8ab4f8; font-size: 0.88rem; }
+
+        .back-btn { display: inline-block; padding: 8px 16px; background: #081028; color: #00f0ff; border: 1px solid #00f0ff; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 0.85rem; margin-bottom: 15px; text-transform: uppercase; }
+
+        .feed-card {
+            background: rgba(8, 16, 40, 0.9); border: 1px solid #00f0ff; border-radius: 14px;
+            padding: 16px; margin-bottom: 18px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            position: relative; word-wrap: break-word;
+        }
+        .feed-card .time-badge { font-size: 11px; color: #00ffcc; margin-bottom: 10px; display: block; }
+        .feed-card .text-content { font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
+
+        .media-box { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 12px; background: #030712; border: 1px solid #0088ff; }
+        .media-box img { width: 100%; height: auto; display: block; object-fit: contain; max-height: 350px; }
+        .media-box video { width: 100%; height: auto; display: block; }
+        .media-box audio { width: 100%; padding: 10px; }
         
-        .feed-item { background: #030712; border-left: 3px solid #00ffcc; padding: 14px; border-radius: 8px; margin-bottom: 15px; font-size: 0.95rem; color: #fff; text-align: left; }
-        .feed-item img, .feed-item video { width: 100%; border-radius: 6px; margin-top: 10px; max-height: 350px; object-fit: contain; }
-        .feed-item audio { width: 100%; margin-top: 10px; }
-        .feed-item a.file-dl-btn { display: inline-block; margin-top: 10px; padding: 10px 16px; background: #00ffcc; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 0.9rem; text-align: center; width: 100%; }
-        .feed-time { font-size: 11px; color: #8ab4f8; margin-top: 8px; display: block; text-align: right; }
-        
-        .no-posts { color: #8ab4f8; font-size: 14px; padding: 30px; }
-        .footer-text { margin-top: 20px; font-size: 12px; color: #5a738e; }
+        .action-link-btn {
+            display: block; width: 100%; padding: 12px; margin-top: 10px;
+            background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000;
+            font-weight: bold; border-radius: 8px; text-align: center; text-decoration: none;
+            font-size: 0.9rem; text-transform: uppercase; box-shadow: 0 0 12px rgba(0,240,255,0.6);
+        }
+
+        .no-posts { text-align: center; color: #8ab4f8; font-size: 0.9rem; padding: 30px; background: #081028; border-radius: 12px; border: 1px dashed #00f0ff; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #5a738e; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <a href="/" class="back-link">← Back to Home</a>
-        
-        <h1>Admin Updates & Media</h1>
-        
-        <div id="updatesContainer">
-            <div class="no-posts">Loading updates...</div>
-        </div>
+    <header>
+        <a href="/" class="back-btn">⬅️ Back to Home</a>
+        <h1>📢 Admin Announcements</h1>
+        <p>Live updates & media shared by Dilshan</p>
+    </header>
 
-        <div class="footer-text">© Powered by Dilshan</div>
+    <div class="container" id="feedContainer">
+        <div class="no-posts">Loading announcements...</div>
     </div>
 
+    <div class="footer">© Powered by Dilshan</div>
+
     <script>
-        async function loadAdminUpdates() {
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+
+        async function loadAdminNotices() {
             try {
                 let res = await fetch('/api/get-notices');
                 let data = await res.json();
-                let container = document.getElementById('updatesContainer');
+                let container = document.getElementById('feedContainer');
 
                 if (!data.notices || data.notices.length === 0) {
-                    container.innerHTML = '<div class="no-posts">No updates or media posted by Admin yet.</div>';
+                    container.innerHTML = '<div class="no-posts">No announcements published yet. Check back later!</div>';
                     return;
                 }
 
                 let html = '';
-                data.notices.forEach(n => {
-                    let mediaContent = '';
-                    if (n.mediaType === 'image' && n.mediaData) {
-                        mediaContent = `<img src="${n.mediaData}" alt="Admin Image">`;
-                    } else if (n.mediaType === 'audio' && n.mediaData) {
-                        mediaContent = `<audio controls src="${n.mediaData}"></audio>`;
-                    } else if (n.mediaType === 'video' && n.mediaData) {
-                        mediaContent = `<video controls src="${n.mediaData}"></video>`;
-                    } else if (n.mediaType === 'file' && n.mediaData) {
-                        mediaContent = `<br><a href="${n.mediaData}" download="Admin-Document" class="file-dl-btn">📎 Download Attached File</a>`;
+                data.notices.forEach(notice => {
+                    html += `<div class="feed-card">`;
+                    html += `<span class="time-badge">🕒 ${notice.time}</span>`;
+                    
+                    if (notice.text) {
+                        html += `<div class="text-content">${notice.text}</div>`;
                     }
 
-                    html += `
-                        <div class="feed-item">
-                            ${n.text ? '📢 ' + n.text : ''}
-                            ${mediaContent}
-                            <span class="feed-time">${n.time}</span>
-                        </div>
-                    `;
+                    if (notice.mediaData) {
+                        html += `<div class="media-box">`;
+                        if (notice.mediaType === 'image') {
+                            html += `<img src="${notice.mediaData}" alt="Admin Image">`;
+                        } else if (notice.mediaType === 'video') {
+                            html += `<video controls src="${notice.mediaData}"></video>`;
+                        } else if (notice.mediaType === 'audio') {
+                            html += `<audio controls src="${notice.mediaData}"></audio>`;
+                        } else if (notice.mediaType === 'file') {
+                            html += `<div style="padding:15px; text-align:center;"><a href="${notice.mediaData}" download="file" style="color:#00f0ff; font-weight:bold;">📥 Download Shared File</a></div>`;
+                        }
+                        html += `</div>`;
+                    }
+
+                    if (notice.postLink) {
+                        html += `<a href="${notice.postLink}" target="_blank" class="action-link-btn">🔗 ${notice.linkButtonText || 'Open Link'}</a>`;
+                    }
+
+                    html += `</div>`;
                 });
+
                 container.innerHTML = html;
             } catch(e) {
-                document.getElementById('updatesContainer').innerHTML = '<div class="no-posts">Failed to load updates.</div>';
+                document.getElementById('feedContainer').innerHTML = '<div class="no-posts">Failed to load feed!</div>';
             }
         }
 
-        window.onload = loadAdminUpdates;
+        loadAdminNotices();
+        setInterval(loadAdminNotices, 8000);
     </script>
 </body>
 </html>
