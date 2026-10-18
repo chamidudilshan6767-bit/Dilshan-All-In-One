@@ -1,12 +1,13 @@
 {
   "name": "dilshan-all-in-one",
   "version": "1.0.0",
-  "description": "Dilshan All In One Web App",
+  "description": "Dilshan All In One Utility Toolbox",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "express-useragent": "^1.0.15"
   }
 }
