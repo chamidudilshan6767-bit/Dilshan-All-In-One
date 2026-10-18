@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const useragent = require('express-useragent');
-const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -9,32 +8,10 @@ app.use(useragent.express());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Path to store visitor logs locally
-const logFilePath = path.join(__dirname, 'visits.json');
+// Memory-based visitor storage (Railway friendly)
+let visitorLogs = [];
 
-// Read logs safely
-function getLogs() {
-    if (!fs.existsSync(logFilePath)) return [];
-    try {
-        return JSON.parse(fs.readFileSync(logFilePath, 'utf8'));
-    } catch (e) {
-        return [];
-    }
-}
-
-// Save log entry safely
-function saveLog(logData) {
-    let logs = getLogs();
-    logs.unshift(logData); // Insert newest log at the top
-    if (logs.length > 100) logs.pop(); // Keep only last 100 visits
-    try {
-        fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
-    } catch(e) {
-        console.error("Log write error:", e);
-    }
-}
-
-// Middleware: Live Visitor Tracking (IP, Exact Device, Page Visit)
+// Track visitors (IP, Device, Activity)
 app.use((req, res, next) => {
     if (!req.url.includes('.') && !req.url.startsWith('/api/') && !req.url.startsWith('/admin-dashboard-secret')) {
         let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
@@ -48,19 +25,23 @@ app.use((req, res, next) => {
             deviceName = 'Samsung Galaxy A14 (Mobile)';
         }
 
-        let action = `Visited page: ${req.url}`;
+        let action = `Visited: ${req.url}`;
         
-        saveLog({
+        // Add new log to the top
+        visitorLogs.unshift({
             time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
             ip: ip,
             device: deviceName,
             action: action
         });
+
+        // Keep last 100 entries
+        if (visitorLogs.length > 100) visitorLogs.pop();
     }
     next();
 });
 
-// Protected Admin API with Password Verification
+// Protected Admin API
 app.post('/api/admin-stats', (req, res) => {
     const { password } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
@@ -71,11 +52,11 @@ app.post('/api/admin-stats', (req, res) => {
 
     res.json({
         success: true,
-        logs: getLogs()
+        logs: visitorLogs
     });
 });
 
-// Secret Installable Admin Dashboard App Route
+// Secret Admin Dashboard App Route
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -109,7 +90,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 button { background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; cursor: pointer; text-transform: uppercase; }
                 .table-container { overflow-x: auto; margin-top: 15px; }
                 table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                th, td { border: 1px solid #0a4f8a; padding: 8px; text-align: left; }
+                th, td { border: 1px solid #0a4f8a; padding: 8px; text-align: left; word-break: break-all; }
                 th { background: #050b18; color: #00f0ff; }
                 tr:hover { background: rgba(0,240,255,0.1); }
             </style>
@@ -145,6 +126,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
 
             <script>
                 let deferredPrompt;
+                let savedPassword = '';
                 const installBtn = document.getElementById('installAppBtn');
 
                 window.addEventListener('beforeinstallprompt', (e) => {
@@ -165,32 +147,39 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 });
 
                 async function fetchLogs() {
-                    const password = document.getElementById('passInput').value;
+                    const inputPass = document.getElementById('passInput').value;
+                    if (inputPass) savedPassword = inputPass;
+
                     try {
                         const res = await fetch('/api/admin-stats', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ password })
+                            body: JSON.stringify({ password: savedPassword })
                         });
                         const data = await res.json();
                         if (data.success) {
                             document.getElementById('loginSection').style.display = 'none';
                             document.getElementById('dashSection').style.display = 'block';
+                            
                             let html = '';
-                            data.logs.forEach(log => {
-                                html += \`<tr>
-                                    <td>\${log.time}</td>
-                                    <td style="color:#ff0055; font-weight:bold;">\${log.ip}</td>
-                                    <td>\${log.device}</td>
-                                    <td>\${log.action}</td>
-                                </tr>\`;
-                            });
+                            if (data.logs.length === 0) {
+                                html = '<tr><td colspan="4" style="text-align:center; color:#8ab4f8;">No visits recorded yet. Open main site in new tab!</td></tr>';
+                            } else {
+                                data.logs.forEach(log => {
+                                    html += \`<tr>
+                                        <td>\${log.time}</td>
+                                        <td style="color:#ff0055; font-weight:bold;">\${log.ip}</td>
+                                        <td>\${log.device}</td>
+                                        <td>\${log.action}</td>
+                                    </tr>\`;
+                                });
+                            }
                             document.getElementById('logTableBody').innerHTML = html;
                         } else {
                             alert(data.error);
                         }
                     } catch (e) {
-                        alert("Login failed!");
+                        alert("Login failed or network error!");
                     }
                 }
 
