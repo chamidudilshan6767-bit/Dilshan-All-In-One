@@ -6,197 +6,87 @@
     <title>Dilshan All In One - Utility Toolbox</title>
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #030712;
-            color: #ffffff;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
         
-        /* Neon Blue Glowing Falling Particles */
         .neon-gem {
             position: fixed;
             background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
             box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff, inset 0 0 5px #ffffff;
             border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
-            pointer-events: none;
-            opacity: 0.8;
-            animation: fallAndGlow linear infinite;
-            z-index: 0;
+            pointer-events: none; opacity: 0.8; animation: fallAndGlow linear infinite; z-index: 0;
         }
         @keyframes fallAndGlow {
             0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
-            20% { opacity: 0.9; }
-            80% { opacity: 0.9; }
+            20% { opacity: 0.9; } 80% { opacity: 0.9; }
             100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        header, .container, .footer {
-            z-index: 1;
-            position: relative;
+        header, .container, .footer { z-index: 1; position: relative; }
+        header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        .logo-box {
+            width: 100px; height: 100px; border-radius: 50%; background: #081028;
+            border: 2px solid #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+            display: flex; justify-content: center; align-items: center; margin: 0 auto 12px auto; overflow: hidden;
+        }
+        .logo-img { width: 80px; height: 80px; object-fit: contain; }
+        header h1 { color: #00f0ff; font-size: 1.8rem; text-shadow: 0 0 12px rgba(0, 240, 255, 0.7); margin-bottom: 5px; text-transform: uppercase; }
+        header p { color: #8ab4f8; font-size: 0.9rem; }
+        
+        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
+        .tool-card {
+            background: rgba(8, 16, 40, 0.9); border: 1px solid #00f0ff; padding: 20px;
+            border-radius: 16px; box-shadow: 0 0 18px rgba(0, 240, 255, 0.25); text-align: center;
+        }
+        .tool-card h2 { font-size: 1.2rem; color: #00f0ff; margin-bottom: 8px; text-transform: uppercase; }
+        .tool-card p { font-size: 0.88rem; color: #b0c4de; margin-bottom: 16px; line-height: 1.4; }
+        
+        .btn {
+            display: block; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold;
+            text-decoration: none; font-size: 0.95rem; cursor: pointer; border: none;
+            background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.7); text-transform: uppercase;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            margin-top: 10px;
+        /* Message Owner Card */
+        .msg-card {
+            background: rgba(8, 16, 40, 0.9); border: 1px solid #ff0055; padding: 20px;
+            border-radius: 16px; box-shadow: 0 0 18px rgba(255, 0, 85, 0.25);
         }
-        .logo-box {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: #081028;
-            border: 2px solid #00f0ff;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 12px auto;
-            overflow: hidden;
+        .msg-card h2 { color: #ff0055; font-size: 1.2rem; margin-bottom: 8px; text-transform: uppercase; text-align: center; }
+        .msg-input {
+            width: 100%; padding: 12px; background: #030712; border: 1px solid #ff0055;
+            color: #fff; border-radius: 8px; font-size: 14px; margin-bottom: 10px; outline: none;
         }
-        .logo-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
+        textarea.msg-input { height: 75px; resize: none; }
+        .btn-danger { background: linear-gradient(90deg, #ff0055, #ff5500); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 85, 0.7); }
+
+        /* Reply Box for User */
+        .reply-box {
+            margin-top: 15px; background: #050b18; border: 1px solid #00ffcc; padding: 12px;
+            border-radius: 10px; display: none;
         }
-        header h1 {
-            color: #00f0ff;
-            font-size: 1.8rem;
-            text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        header p {
-            color: #8ab4f8;
-            font-size: 0.9rem;
-        }
-        .container {
-            width: 100%;
-            max-width: 450px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .tool-card {
-            background: rgba(8, 16, 40, 0.9);
-            border: 1px solid #00f0ff;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
-            text-align: center;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
-        }
-        .tool-card:hover {
-            border-color: #ffffff;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
-            transform: translateY(-2px);
-        }
-        .tool-card h2 {
-            font-size: 1.2rem;
-            color: #00f0ff;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-        }
-        .tool-card p {
-            font-size: 0.88rem;
-            color: #b0c4de;
-            margin-bottom: 16px;
-            line-height: 1.4;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-            background: linear-gradient(90deg, #0072ff, #00f0ff);
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.7);
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .btn:hover {
-            box-shadow: 0 0 25px rgba(0, 240, 255, 1);
-            transform: scale(1.02);
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #5a738e;
-        }
+        .reply-box h4 { color: #00ffcc; font-size: 0.9rem; margin-bottom: 5px; }
+
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #5a738e; }
 
         /* Mandatory Name Popup Modal */
         #nameModal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 7, 18, 0.98);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            padding: 20px;
-            backdrop-filter: blur(10px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.98); display: flex; justify-content: center;
+            align-items: center; z-index: 99999; padding: 20px; backdrop-filter: blur(10px);
         }
         .modal-card {
-            background: #081028;
-            border: 2px solid #00f0ff;
-            padding: 30px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
+            background: #081028; border: 2px solid #00f0ff; padding: 30px; border-radius: 16px;
+            width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
         }
-        .modal-card h2 {
-            color: #00f0ff;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .modal-card p {
-            color: #8ab4f8;
-            font-size: 0.9rem;
-            margin-bottom: 18px;
-        }
+        .modal-card h2 { color: #00f0ff; font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; }
+        .modal-card p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 18px; }
         .modal-input {
-            width: 100%;
-            padding: 14px;
-            background: #030712;
-            border: 1px solid #00f0ff;
-            color: #fff;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 12px;
-            outline: none;
-            text-align: center;
+            width: 100%; padding: 14px; background: #030712; border: 1px solid #00f0ff;
+            color: #fff; border-radius: 8px; font-size: 16px; margin-bottom: 12px; outline: none; text-align: center;
         }
-        .error-msg {
-            color: #ff0055;
-            font-size: 12px;
-            margin-bottom: 12px;
-            display: none;
-            font-weight: bold;
-        }
+        .error-msg { color: #ff0055; font-size: 12px; margin-bottom: 12px; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -206,7 +96,7 @@
         <div class="modal-card">
             <h2>Welcome!</h2>
             <p>Please enter your name to access the site:</p>
-            <input type="text" id="visitorNameInput" class="modal-input" placeholder="Enter your name here..." required>
+            <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name..." required>
             <div id="errorText" class="error-msg">⚠️ Name is required to enter!</div>
             <button class="btn" onclick="submitVisitorName()">Enter Site</button>
         </div>
@@ -217,13 +107,14 @@
             let gem = document.createElement('div');
             gem.className = 'neon-gem';
             let size = Math.random() * 8 + 6 + 'px';
-            gem.style.width = size;
-            gem.style.height = size;
+            gem.style.width = size; gem.style.height = size;
             gem.style.left = Math.random() * 100 + 'vw';
             gem.style.animationDuration = Math.random() * 6 + 4 + 's';
             gem.style.animationDelay = Math.random() * 5 + 's';
             document.body.appendChild(gem);
         }
+
+        let currentVisitorIP = '';
 
         function submitVisitorName() {
             let inputField = document.getElementById('visitorNameInput');
@@ -238,15 +129,56 @@
 
             errorText.style.display = 'none';
 
-            // Send mandatory name to server
             fetch('/api/set-name', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name })
+            }).then(res => res.json()).then(data => {
+                if(data.ip) currentVisitorIP = data.ip;
             }).catch(() => {});
 
             document.getElementById('nameModal').style.display = 'none';
         }
+
+        async function sendMessageToOwner() {
+            let username = document.getElementById('msgUsername').value.trim();
+            let message = document.getElementById('msgContent').value.trim();
+
+            if (!username || !message) {
+                alert("Please fill in both your Username/Email and Message!");
+                return;
+            }
+
+            try {
+                let res = await fetch('/api/send-owner-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, message })
+                });
+                let data = await res.json();
+                if (data.success) {
+                    alert("Your message has been sent successfully to the Owner!");
+                    document.getElementById('msgContent').value = '';
+                    checkUserReply();
+                }
+            } catch(e) {
+                alert("Failed to send message!");
+            }
+        }
+
+        // Check if owner replied
+        async function checkUserReply() {
+            try {
+                let res = await fetch('/api/check-reply');
+                let data = await res.json();
+                if (data.reply) {
+                    document.getElementById('replyText').innerText = data.reply;
+                    document.getElementById('userReplyBox').style.display = 'block';
+                }
+            } catch(e) {}
+        }
+
+        setInterval(checkUserReply, 6000);
     </script>
 
     <header>
@@ -277,6 +209,21 @@
             <h2>Media Downloader</h2>
             <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
             <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
+        </div>
+
+        <!-- Message Owner Card -->
+        <div class="msg-card">
+            <h2>💬 Message to Owner</h2>
+            <p style="color:#8ab4f8; font-size:0.85rem; margin-bottom:12px; text-align:center;">Have a question or issue? Send a direct message in English!</p>
+            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Username or Email...">
+            <textarea id="msgContent" class="msg-input" placeholder="Type your message in English here..."></textarea>
+            <button class="btn btn-danger" onclick="sendMessageToOwner()">Send Message</button>
+
+            <!-- Reply Box -->
+            <div id="userReplyBox" class="reply-box">
+                <h4>✨ Owner's Reply:</h4>
+                <p id="replyText" style="font-size:0.9rem; color:#fff;"></p>
+            </div>
         </div>
     </div>
 
