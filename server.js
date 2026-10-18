@@ -8,10 +8,12 @@ const PORT = process.env.PORT || 3000;
 app.use(useragent.express());
 app.use(express.json());
 
+// Storage
 let visitorLogs = [];
 let ownerMessages = [];
 let visitorNames = {};
 let userReplies = {};
+let adminNotices = []; // Stores admin announcements
 
 function logVisitor(req, pageName) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
@@ -32,7 +34,7 @@ function logVisitor(req, pageName) {
     
     let ua = req.useragent;
     let userAgentRaw = req.headers['user-agent'] || 'Unknown Agent';
-    let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
+    let deviceName = `${ua.platform || 'Device'} - ${ua.os \vert{}\vert{} 'OS'} (${ua.browser || 'Browser'})`;
     
     if (!ua.platform && !ua.os && !ua.browser || deviceName.includes('unknown')) {
         deviceName = userAgentRaw;
@@ -92,6 +94,11 @@ app.get('/api/check-reply', (req, res) => {
     res.json({ reply: userReplies[ip] || null });
 });
 
+// Endpoint for public site to fetch Admin Notices
+app.get('/api/get-notices', (req, res) => {
+    res.json({ notices: adminNotices });
+});
+
 // Explicit Route Tracking for Pages
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
@@ -120,12 +127,24 @@ app.get('/tiktok-downloader.html', (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Protected Admin API (Stats, Messages, Replies & Notices)
 app.post('/api/admin-stats', (req, res) => {
-    const { password, replyText, targetIp } = req.body;
+    const { password, replyText, targetIp, newNotice } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
 
     if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
+    }
+
+    // If admin posted a new notice
+    if (newNotice) {
+        adminNotices.unshift({
+            id: Date.now(),
+            time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
+            text: newNotice
+        });
+        if (adminNotices.length > 10) adminNotices.pop();
+        return res.json({ success: true, message: "Notice published!" });
     }
 
     if (replyText && targetIp) {
@@ -136,10 +155,12 @@ app.post('/api/admin-stats', (req, res) => {
     res.json({
         success: true,
         logs: visitorLogs,
-        messages: ownerMessages
+        messages: ownerMessages,
+        notices: adminNotices
     });
 });
 
+// Secret Admin Dashboard Mobile App Route with Notice Publisher Box
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -161,7 +182,8 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 
                 .container { max-width: 500px; margin: 0 auto; }
                 .login-card { background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; }
-                input { width: 100%; padding: 14px; margin: 15px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 16px; outline: none; text-align: center; }
+                input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 15px; outline: none; }
+                textarea { height: 75px; resize: none; text-align: left; }
                 .btn { width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-transform: uppercase; }
                 
                 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -169,6 +191,10 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 
                 .section-title { font-size: 15px; font-weight: bold; margin: 20px 0 10px 0; text-transform: uppercase; }
                 
+                /* Notice Publisher Box */
+                .notice-publisher { background: #081226; border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+                .notice-publisher h3 { color: #00f0ff; font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; }
+
                 .msg-box-admin { background: #1a0814; border: 1px solid #ff0055; border-radius: 12px; padding: 15px; margin-bottom: 12px; position: relative; }
                 .msg-box-admin .time-stamp { font-size: 11px; color: #ff88aa; position: absolute; top: 12px; right: 15px; }
                 .msg-box-admin .user-tag { font-size: 15px; font-weight: bold; color: #ff0055; margin-bottom: 4px; }
@@ -207,6 +233,13 @@ app.get('/admin-dashboard-secret', (req, res) => {
                         <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
                     </div>
                     
+                    <!-- Admin Notice Publisher -->
+                    <div class="notice-publisher">
+                        <h3>📢 Publish Admin Notice</h3>
+                        <textarea id="noticeInput" placeholder="Type notice to display on main site..."></textarea>
+                        <button class="btn" style="padding:10px; font-size:13px;" onclick="publishNotice()">Post Notice to Site</button>
+                    </div>
+
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
@@ -297,6 +330,29 @@ app.get('/admin-dashboard-secret', (req, res) => {
                         }
                     } catch (e) {
                         alert("Login failed or network error!");
+                    }
+                }
+
+                async function publishNotice() {
+                    let newNotice = document.getElementById('noticeInput').value.trim();
+                    if (!newNotice) {
+                        alert("Please type a notice first!");
+                        return;
+                    }
+
+                    try {
+                        let res = await fetch('/api/admin-stats', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ password: savedPassword, newNotice })
+                        });
+                        let data = await res.json();
+                        if (data.success) {
+                            alert("Notice published successfully to the main site!");
+                            document.getElementById('noticeInput').value = '';
+                        }
+                    } catch(e) {
+                        alert("Failed to publish notice!");
                     }
                 }
 
