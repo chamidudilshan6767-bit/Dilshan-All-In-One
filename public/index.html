@@ -4,145 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dilshan All In One - Utility Toolbox</title>
-    <!-- Logo / Favicon -->
     <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            margin-top: 10px;
-        }
-        .logo-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            object-fit: contain;
-            background: #ffffff;
-        }
-        header h1 {
-            color: #075e54;
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-        header p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-        .container {
-            width: 100%;
-            max-width: 450px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .tool-card {
-            background: #ffffff;
-            padding: 22px;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        .tool-card:hover {
-            transform: translateY(-3px);
-        }
-        .tool-card h2 {
-            font-size: 1.25rem;
-            color: #128c7e;
-            margin-bottom: 10px;
-        }
-        .tool-card p {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 16px;
-            line-height: 1.4;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.2s;
-        }
-        .btn-success {
-            background-color: #25d366;
-            color: white;
-        }
-        .btn-success:hover {
-            background-color: #1ebd56;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 13px;
-            color: #888;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        .logo-img { width: 80px; height: 80px; border-radius: 16px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); object-fit: contain; background: #ffffff; }
+        header h1 { color: #075e54; font-size: 2rem; margin-bottom: 5px; }
+        header p { color: #666; font-size: 0.95rem; }
+        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
+        .tool-card { background: #ffffff; padding: 22px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); text-align: center; transition: transform 0.2s; }
+        .tool-card:hover { transform: translateY(-3px); }
+        .tool-card h2 { font-size: 1.25rem; color: #128c7e; margin-bottom: 10px; }
+        .tool-card p { font-size: 0.9rem; color: #555; margin-bottom: 16px; line-height: 1.4; }
+        .btn { display: inline-block; padding: 10px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 0.95rem; cursor: pointer; border: none; background-color: #25d366; color: white; }
+        .btn:hover { background-color: #1ebd56; }
+        .footer { text-align: center; margin-top: 30px; font-size: 13px; color: #888; }
     </style>
 </head>
 <body>
-
     <header>
-        <img src="/logo.png" alt="Dilshan All In One Logo" class="logo-img">
+        <img src="/logo.png" alt="Logo" class="logo-img">
         <h1>Dilshan All In One</h1>
         <p>Your ultimate utility toolbox in one place</p>
     </header>
-
     <div class="container">
-        
-        <!-- WhatsApp Unban Tool -->
         <div class="tool-card">
             <h2>WhatsApp Unban Tool</h2>
             <p>Generate professional appeal emails and contact WhatsApp support instantly.</p>
-            <a href="/whatsapp-unban.html" class="btn btn-success">Open Tool</a>
+            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
         </div>
-
-        <!-- QR Code Generator -->
         <div class="tool-card">
             <h2>QR Code Generator</h2>
             <p>Generate custom QR codes easily with custom colors & logo support.</p>
-            <a href="/qr-generator.html" class="btn btn-success">Open Tool</a>
+            <a href="/qr-generator.html" class="btn">Open Tool</a>
         </div>
-
-        <!-- Password Generator -->
         <div class="tool-card">
             <h2>Password Generator</h2>
             <p>Create secure and strong random custom passwords.</p>
-            <a href="/password-generator.html" class="btn btn-success">Open Tool</a>
+            <a href="/password-generator.html" class="btn">Open Tool</a>
         </div>
-
-        <!-- TikTok Downloader -->
         <div class="tool-card">
             <h2>TikTok Downloader</h2>
             <p>Download TikTok videos in 1080p, 720p & MP3 without watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn btn-success">Open Tool</a>
+            <a href="/tiktok-downloader.html" class="btn">Open Tool</a>
         </div>
-
     </div>
-
-    <div class="footer">
-        © Powered by Dilshan
-    </div>
-
+    <div class="footer">© Powered by Dilshan</div>
 </body>
 </html>
