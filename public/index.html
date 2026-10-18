@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dilshan All In One - Utility Toolbox</title>
-    <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
     <style>
         * {
             box-sizing: border-box;
@@ -59,8 +59,8 @@
             margin-top: 10px;
         }
         .logo-box {
-            width: 90px;
-            height: 90px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: #081028;
             border: 2px solid #00f0ff;
@@ -69,10 +69,11 @@
             justify-content: center;
             align-items: center;
             margin: 0 auto 12px auto;
+            overflow: hidden;
         }
         .logo-img {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
         }
         header h1 {
@@ -158,11 +159,11 @@
         for (let i = 0; i < 22; i++) {
             let gem = document.createElement('div');
             gem.className = 'neon-gem';
-            let size = Math.random() * 8 + 6 + 'px'; // Gem size
+            let size = Math.random() * 8 + 6 + 'px';
             gem.style.width = size;
             gem.style.height = size;
             gem.style.left = Math.random() * 100 + 'vw';
-            gem.style.animationDuration = Math.random() * 6 + 4 + 's'; // Falling speed
+            gem.style.animationDuration = Math.random() * 6 + 4 + 's';
             gem.style.animationDelay = Math.random() * 5 + 's';
             document.body.appendChild(gem);
         }
@@ -170,7 +171,7 @@
 
     <header>
         <div class="logo-box">
-            <img src="/logo.png" alt="Logo" class="logo-img">
+            <img src="/logo.svg" alt="Dilshan All In One Logo" class="logo-img">
         </div>
         <h1>Dilshan All In One</h1>
         <p>Your Ultimate Cyber Utility Hub</p>
@@ -179,9 +180,9 @@
     <div class="container">
         
         <div class="tool-card">
-            <h2>Media Downloader</h2>
-            <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
+            <h2>WhatsApp Unban Tool</h2>
+            <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
+            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
         </div>
 
         <div class="tool-card">
@@ -197,9 +198,9 @@
         </div>
 
         <div class="tool-card">
-            <h2>WhatsApp Unban Tool</h2>
-            <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
-            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
+            <h2>Media Downloader</h2>
+            <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
+            <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
         </div>
 
     </div>
