@@ -31,13 +31,13 @@ function logVisitor(req, pageName) {
     }
     
     let ua = req.useragent;
-    let userAgentRaw = req.headers['user-agent'] || '';
+    let userAgentRaw = req.headers['user-agent'] || 'Unknown Agent';
     
+    // Improved Device String Detection
     let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
     
-    // Fallback if useragent parser returns unknown
-    if (!ua.platform && !ua.os && !ua.browser) {
-        deviceName = userAgentRaw.length > 50 ? userAgentRaw.substring(0, 50) + '...' : userAgentRaw;
+    if (!ua.platform && !ua.os && !ua.browser || deviceName.includes('unknown')) {
+        deviceName = userAgentRaw; // Fallback to raw user-agent so it's never completely unknown
     }
     
     // Custom checks for popular devices/apps
@@ -47,6 +47,10 @@ function logVisitor(req, pageName) {
         deviceName = 'WhatsApp In-App Browser';
     } else if (userAgentRaw.includes('Telegram')) {
         deviceName = 'Telegram In-App Browser';
+    } else if (userAgentRaw.includes('iPhone')) {
+        deviceName = 'Apple iPhone (iOS)';
+    } else if (userAgentRaw.includes('Android')) {
+        deviceName = 'Android Mobile Device';
     }
 
     let visitorName = visitorNames[ip] || 'Guest / Unnamed';
@@ -150,7 +154,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 .visitor-card .time-stamp { font-size: 11px; color: #8ab4f8; position: absolute; top: 12px; right: 15px; }
                 .visitor-card .name-tag { font-size: 16px; font-weight: bold; color: #00ffcc; margin-bottom: 4px; }
                 .visitor-card .ip-tag { font-size: 13px; color: #ff0055; margin-bottom: 6px; word-break: break-all; }
-                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: center; gap: 6px; word-break: break-all; }
+                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: flex-start; gap: 6px; word-break: break-all; }
                 .info-row span { color: #00f0ff; font-weight: bold; min-width: 70px; }
                 .no-logs { text-align: center; padding: 20px; color: #8ab4f8; font-size: 14px; }
             </style>
@@ -210,7 +214,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     if (inputPass) savedPassword = inputPass;
 
                     try {
-                        const res = `+`await fetch('/api/admin-stats', {`+`
+                        const res = await fetch('/api/admin-stats', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ password: savedPassword })
