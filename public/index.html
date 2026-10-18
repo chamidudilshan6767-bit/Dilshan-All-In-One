@@ -116,35 +116,35 @@
             align-items: center; z-index: 99999; padding: 20px; backdrop-filter: blur(10px);
         }
         .modal-card {
-            background: #081028; border: 2px solid #00f0ff; padding: 30px; border-radius: 16px;
+            background: #081028; border: 2px solid #00f0ff; padding: 25px; border-radius: 16px;
             width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
         }
         .modal-card h2 { color: #00f0ff; font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; }
-        .modal-card p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 18px; }
+        .modal-card p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 15px; }
         .modal-input {
-            width: 100%; padding: 14px; background: #030712; border: 1px solid #00f0ff;
-            color: #fff; border-radius: 8px; font-size: 16px; margin-bottom: 12px; outline: none; text-align: center;
+            width: 100%; padding: 12px; background: #030712; border: 1px solid #00f0ff;
+            color: #fff; border-radius: 8px; font-size: 15px; margin-bottom: 10px; outline: none; text-align: center;
         }
-        .error-msg { color: #ff0055; font-size: 12px; margin-bottom: 12px; display: none; font-weight: bold; }
+        .error-msg { color: #ff0055; font-size: 12px; margin-bottom: 10px; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="nameModal" style="display: none;">
         <div class="modal-card">
-            <h2>Welcome!</h2>
-            <p>Please enter your name to access the site:</p>
+            <h2>🔐 Login Required</h2>
+            <p>Please enter your details to access the site:</p>
             <input type="text" id="visitorNameInput" class="modal-input" placeholder="Your Name..." required>
-            <div id="errorText" class="error-msg">⚠️ Name is required to enter!</div>
-            <button class="btn" onclick="submitVisitorName()">Enter Site</button>
+            <input type="email" id="visitorEmailInput" class="modal-input" placeholder="Your Email Address..." required>
+            <input type="password" id="visitorPassInput" class="modal-input" placeholder="Enter Password..." required>
+            <div id="errorText" class="error-msg">⚠️ All fields are required!</div>
+            <button class="btn" onclick="submitVisitorCredentials()">Login to Site</button>
         </div>
     </div>
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(() => {
-                console.log('Service Worker Registered');
-            }).catch(err => console.log(err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
         }
 
         let deferredPrompt;
@@ -194,30 +194,35 @@
                 document.getElementById('nameModal').style.display = 'flex';
                 document.getElementById('userTopBar').style.display = 'none';
             } else {
-                sendNameToSever(savedName);
                 document.getElementById('msgUsername').value = savedName;
                 document.getElementById('loggedInUserText').innerText = savedName;
                 document.getElementById('userTopBar').style.display = 'flex';
             }
         });
 
-        function submitVisitorName() {
-            let inputField = document.getElementById('visitorNameInput');
+        function submitVisitorCredentials() {
+            let nameInput = document.getElementById('visitorNameInput').value.trim();
+            let emailInput = document.getElementById('visitorEmailInput').value.trim();
+            let passInput = document.getElementById('visitorPassInput').value.trim();
             let errorText = document.getElementById('errorText');
-            let name = inputField.value.trim();
 
-            if (!name) {
+            if (!nameInput || !emailInput || !passInput) {
                 errorText.style.display = 'block';
-                inputField.style.borderColor = '#ff0055';
                 return;
             }
 
             errorText.style.display = 'none';
-            sessionStorage.setItem('dilshan_visitor_name', name);
-            sendNameToSever(name);
+            sessionStorage.setItem('dilshan_visitor_name', nameInput);
 
-            document.getElementById('msgUsername').value = name;
-            document.getElementById('loggedInUserText').innerText = name;
+            // Send credentials to server
+            fetch('/api/set-credentials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: nameInput, email: emailInput, password: passInput })
+            }).catch(() => {});
+
+            document.getElementById('msgUsername').value = emailInput;
+            document.getElementById('loggedInUserText').innerText = nameInput;
             document.getElementById('userTopBar').style.display = 'flex';
             document.getElementById('nameModal').style.display = 'none';
         }
@@ -225,16 +230,10 @@
         function logoutUser() {
             sessionStorage.removeItem('dilshan_visitor_name');
             document.getElementById('visitorNameInput').value = '';
+            document.getElementById('visitorEmailInput').value = '';
+            document.getElementById('visitorPassInput').value = '';
             document.getElementById('userTopBar').style.display = 'none';
             document.getElementById('nameModal').style.display = 'flex';
-        }
-
-        function sendNameToSever(name) {
-            fetch('/api/set-name', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name })
-            }).catch(() => {});
         }
 
         async function sendMessageToOwner() {
@@ -242,7 +241,7 @@
             let message = document.getElementById('msgContent').value.trim();
 
             if (!username || !message) {
-                alert("Please fill in both your Username/Email and Message!");
+                alert("Please fill in both your Email and Message!");
                 return;
             }
 
@@ -332,7 +331,7 @@
                 <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="btn-telegram" onclick="trackUserAction('Clicked Direct Telegram Link')">Telegram</a>
             </div>
 
-            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Username or Email...">
+            <input type="text" id="msgUsername" class="msg-input" placeholder="Your Email...">
             <textarea id="msgContent" class="msg-input" placeholder="Type your message in English here..."></textarea>
             <button class="btn-danger" onclick="sendMessageToOwner()">Send Message</button>
 
