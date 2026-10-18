@@ -10,7 +10,6 @@ app.use(express.json());
 
 // Memory-based visitor storage
 let visitorLogs = [];
-// Temporary store for visitor names by IP/Session
 let visitorNames = {};
 
 // Helper function to capture visitor details
@@ -32,11 +31,22 @@ function logVisitor(req, pageName) {
     }
     
     let ua = req.useragent;
+    let userAgentRaw = req.headers['user-agent'] || '';
+    
     let deviceName = `${ua.platform || 'Device'} - ${ua.os || 'OS'} (${ua.browser || 'Browser'})`;
     
-    let userAgentRaw = req.headers['user-agent'] || '';
+    // Fallback if useragent parser returns unknown
+    if (!ua.platform && !ua.os && !ua.browser) {
+        deviceName = userAgentRaw.length > 50 ? userAgentRaw.substring(0, 50) + '...' : userAgentRaw;
+    }
+    
+    // Custom checks for popular devices/apps
     if (userAgentRaw.includes('SM-A14') || userAgentRaw.includes('Samsung A14')) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
+    } else if (userAgentRaw.includes('WhatsApp')) {
+        deviceName = 'WhatsApp In-App Browser';
+    } else if (userAgentRaw.includes('Telegram')) {
+        deviceName = 'Telegram In-App Browser';
     }
 
     let visitorName = visitorNames[ip] || 'Guest / Unnamed';
@@ -61,7 +71,6 @@ app.post('/api/set-name', (req, res) => {
     const { name } = req.body;
     if (name) {
         visitorNames[ip] = name;
-        // Update latest log name if exists for this IP
         for (let log of visitorLogs) {
             if (log.ip === ip) {
                 log.name = name;
@@ -78,19 +87,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// PWA Service Worker script
-app.get('/sw.js', (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.send(`
-        self.addEventListener('install', (e) => self.skipWaiting());
-        self.addEventListener('activate', (e) => self.clients.claim());
-        self.addEventListener('fetch', (e) => {});
-    `);
-});
-
 app.get('/:page', (req, res, next) => {
     const page = req.params.page;
-    if (page === 'api' || page === 'admin-dashboard-secret' || page === 'sw.js') {
+    if (page === 'api' || page === 'admin-dashboard-secret') {
         return next();
     }
     const filePath = path.join(__dirname, 'public', page);
@@ -119,7 +118,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard Mobile App with Name display
+// Secret Admin Dashboard Mobile App Route
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -129,19 +128,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Dilshan Admin Panel</title>
             <link rel="icon" type="image/svg+xml" href="/logo.svg">
-            <link rel="manifest" href="data:application/manifest+json,${encodeURIComponent(JSON.stringify({
-                name: "Dilshan Admin Panel",
-                short_name: "Admin App",
-                start_url: "/admin-dashboard-secret",
-                display: "standalone",
-                background_color: "#030712",
-                theme_color: "#00f0ff",
-                icons: [{
-                    src: "/logo.svg",
-                    sizes: "512x512",
-                    type: "image/svg+xml"
-                }]
-            }))}">
+            <link rel="manifest" href="/manifest.json">
             <meta name="theme-color" content="#00f0ff">
             <style>
                 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -163,8 +150,8 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 .visitor-card .time-stamp { font-size: 11px; color: #8ab4f8; position: absolute; top: 12px; right: 15px; }
                 .visitor-card .name-tag { font-size: 16px; font-weight: bold; color: #00ffcc; margin-bottom: 4px; }
                 .visitor-card .ip-tag { font-size: 13px; color: #ff0055; margin-bottom: 6px; word-break: break-all; }
-                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-                .info-row span { color: #00f0ff; font-weight: bold; }
+                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: center; gap: 6px; word-break: break-all; }
+                .info-row span { color: #00f0ff; font-weight: bold; min-width: 70px; }
                 .no-logs { text-align: center; padding: 20px; color: #8ab4f8; font-size: 14px; }
             </style>
         </head>
@@ -223,7 +210,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     if (inputPass) savedPassword = inputPass;
 
                     try {
-                        const res = await fetch('/api/admin-stats', {
+                        const res = `+`await fetch('/api/admin-stats', {`+`
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ password: savedPassword })
