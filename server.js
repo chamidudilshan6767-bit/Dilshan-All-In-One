@@ -6,7 +6,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(useragent.express());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Allow large base64 media uploads
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Storage
 let visitorLogs = [];
@@ -98,6 +99,7 @@ app.get('/api/get-notices', (req, res) => {
     res.json({ notices: adminNotices });
 });
 
+// Explicit Route Tracking
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -125,22 +127,27 @@ app.get('/tiktok-downloader.html', (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Protected Admin API
 app.post('/api/admin-stats', (req, res) => {
-    const { password, replyText, targetIp, newNotice } = req.body;
+    const { password, replyText, targetIp, newNotice, mediaData, mediaType, mediaCaption } = req.body;
     const ADMIN_PASSWORD = "#chamidu*6767*#";
 
     if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ success: false, error: "Unauthorized!" });
     }
 
-    if (newNotice) {
+    // If admin posted media/file/text notice
+    if (newNotice || mediaData) {
         adminNotices.unshift({
             id: Date.now(),
             time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
-            text: newNotice
+            text: newNotice || '',
+            mediaType: mediaType || 'text', // text, image, audio, video, file
+            mediaData: mediaData || null,
+            mediaCaption: mediaCaption || ''
         });
-        if (adminNotices.length > 10) adminNotices.pop();
-        return res.json({ success: true, message: "Notice published!" });
+        if (adminNotices.length > 15) adminNotices.pop();
+        return res.json({ success: true, message: "Published successfully!" });
     }
 
     if (replyText && targetIp) {
@@ -156,6 +163,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
+// Secret Admin Dashboard Mobile App Route with Media Publisher
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -177,8 +185,8 @@ app.get('/admin-dashboard-secret', (req, res) => {
                 
                 .container { max-width: 500px; margin: 0 auto; }
                 .login-card { background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; }
-                input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 15px; outline: none; }
-                textarea { height: 75px; resize: none; text-align: left; }
+                input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 14px; outline: none; }
+                textarea { height: 65px; resize: none; text-align: left; }
                 .btn { width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-transform: uppercase; }
                 
                 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -227,10 +235,19 @@ app.get('/admin-dashboard-secret', (req, res) => {
                         <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
                     </div>
                     
+                    <!-- Media / Notice Publisher Box -->
                     <div class="notice-publisher">
-                        <h3>📢 Publish Admin Notice</h3>
-                        <textarea id="noticeInput" placeholder="Type notice to display on main site..."></textarea>
-                        <button class="btn" style="padding:10px; font-size:13px;" onclick="publishNotice()">Post Notice to Site</button>
+                        <h3>📤 Publish Post / Media to Site</h3>
+                        <select id="mediaType">
+                            <option value="text">Text Notice Only</option>
+                            <option value="image">Image / Photo</option>
+                            <option value="audio">Audio File</option>
+                            <option value="video">Video File</option>
+                            <option value="file">Document / File</option>
+                        </select>
+                        <input type="file" id="mediaFile" style="padding:8px; font-size:12px;">
+                        <textarea id="noticeInput" placeholder="Type caption or message..."></textarea>
+                        <button class="btn" style="padding:10px; font-size:13px;" onclick="publishMediaNotice()">Publish to Main Site</button>
                     </div>
 
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
@@ -326,26 +343,50 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     }
                 }
 
-                async function publishNotice() {
-                    let newNotice = document.getElementById('noticeInput').value.trim();
-                    if (!newNotice) {
-                        alert("Please type a notice first!");
+                function publishMediaNotice() {
+                    let type = document.getElementById('mediaType').value;
+                    let caption = document.getElementById('noticeInput').value.trim();
+                    let fileInput = document.getElementById('mediaFile');
+
+                    if (type !== 'text' && fileInput.files.length === 0) {
+                        alert("Please select a file/media to upload!");
                         return;
                     }
 
+                    if (type === 'text' && !caption) {
+                        alert("Please type a notice message!");
+                        return;
+                    }
+
+                    if (type === 'text') {
+                        sendDataToServer(type, null, caption);
+                        return;
+                    }
+
+                    let file = fileInput.files[0];
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        let base64Data = e.target.result;
+                        sendDataToServer(type, base64Data, caption);
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                async function sendDataToServer(mediaType, mediaData, newNotice) {
                     try {
                         let res = await fetch('/api/admin-stats', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ password: savedPassword, newNotice })
+                            body: JSON.stringify({ password: savedPassword, newNotice, mediaType, mediaData })
                         });
                         let data = await res.json();
                         if (data.success) {
-                            alert("Notice published successfully to the main site!");
+                            alert("Published successfully to main site!");
                             document.getElementById('noticeInput').value = '';
+                            document.getElementById('mediaFile').value = '';
                         }
                     } catch(e) {
-                        alert("Failed to publish notice!");
+                        alert("Publish failed!");
                     }
                 }
 
