@@ -12,11 +12,9 @@
         body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
         
         .neon-gem {
-            position: fixed;
-            background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
+            position: fixed; background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
             box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff, inset 0 0 5px #ffffff;
-            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
-            pointer-events: none; opacity: 0.8; animation: fallAndGlow linear infinite; z-index: 0;
+            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%; pointer-events: none; opacity: 0.8; animation: fallAndGlow linear infinite; z-index: 0;
         }
         @keyframes fallAndGlow {
             0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
@@ -37,7 +35,6 @@
         
         .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Install App Button */
         .install-btn {
             display: none; width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff);
             color: #000; font-weight: bold; border: none; border-radius: 12px; cursor: pointer;
@@ -154,6 +151,7 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     document.getElementById('installAppBtn').style.display = 'none';
+                    fetch('/api/track-install', { method: 'POST' }).catch(() => {});
                 }
                 deferredPrompt = null;
             }
@@ -176,7 +174,6 @@
                 document.getElementById('nameModal').style.display = 'flex';
             } else {
                 sendNameToSever(savedName);
-                // Auto-fill username/email field if name was already entered
                 document.getElementById('msgUsername').value = savedName;
             }
         });
@@ -196,7 +193,6 @@
             sessionStorage.setItem('dilshan_visitor_name', name);
             sendNameToSever(name);
 
-            // Auto-fill the message input with the saved name
             document.getElementById('msgUsername').value = name;
             document.getElementById('nameModal').style.display = 'none';
         }
@@ -258,10 +254,8 @@
     </header>
 
     <div class="container">
-        <!-- Install App Button -->
-        <button id="installAppBtn" class="install-btn" onclick="installApp()">📲 Install App to Device</button>
+        <button id="installAppBtn" class="install-btn" onclick="installApp()">📲 Install Main App to Device</button>
 
-        <!-- Admin Updates Tool Card -->
         <div class="neon-card-border tool-card admin-tool-card">
             <h2>Admin Updates & Media</h2>
             <p>View latest announcements, images, audio, video & files shared by Admin.</p>
@@ -292,7 +286,6 @@
             <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
         </div>
 
-        <!-- Contact Owner Card with Auto-filled Username -->
         <div class="neon-card-border contact-owner-card" style="text-align: left;">
             <h2>💬 Contact Owner</h2>
             <p style="color:#8ab4f8; font-size:0.85rem; margin-bottom:12px; text-align:center;">Reach out via Telegram or send a direct message below!</p>
