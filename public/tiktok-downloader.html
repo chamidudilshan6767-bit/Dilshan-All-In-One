@@ -6,61 +6,51 @@
     <title>TikTok Downloader - Dilshan All In One</title>
     <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0b0e14; color: #ffffff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { background: #121824; border: 1px solid #1f293d; border-radius: 16px; padding: 25px; width: 100%; max-width: 450px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .back-link { display: inline-block; margin-bottom: 15px; color: #00c6ff; text-decoration: none; font-size: 14px; font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .card { width: 100%; max-width: 450px; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); }
+        .back-link { display: inline-block; margin-bottom: 15px; color: #128c7e; text-decoration: none; font-weight: bold; font-size: 14px; }
         .logo-container { display: flex; justify-content: center; margin-bottom: 12px; }
-        .main-logo-box { width: 70px; height: 70px; border: 2px solid #1f293d; border-radius: 14px; background: #0b0e14; display: flex; justify-content: center; align-items: center; }
-        .main-logo-box img { width: 42px; height: 42px; object-fit: contain; }
-        h2 { text-align: center; color: #00c6ff; font-size: 1.2rem; margin-bottom: 5px; }
-        p.subtitle { text-align: center; font-size: 11px; color: #8a99ad; margin-bottom: 15px; }
-        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2a364f; background: #0b0e14; color: #fff; font-size: 15px; outline: none; margin-bottom: 10px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(90deg, #0072ff, #00c6ff); color: white; font-size: 15px; font-weight: bold; cursor: pointer; }
-        
-        #result-section { display: none; margin-top: 15px; border-top: 1px solid #1f293d; padding-top: 15px; }
-        .video-preview { width: 100%; border-radius: 10px; max-height: 250px; object-fit: cover; margin-bottom: 10px; }
-        .video-desc { font-size: 12px; color: #d1d5db; margin-bottom: 10px; word-break: break-word; }
-        .quality-title { font-size: 12px; color: #8a99ad; margin-bottom: 8px; }
-        
-        .dl-btn { display: block; width: 100%; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: bold; color: white; margin-bottom: 8px; font-size: 13px; }
+        .main-logo-box { width: 75px; height: 75px; border-radius: 16px; background: #ffffff; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .main-logo-box img { width: 50px; height: 50px; object-fit: contain; }
+        h2 { text-align: center; color: #075e54; font-size: 1.4rem; margin-bottom: 5px; }
+        p.subtitle { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 20px; }
+        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; color: #333; font-size: 15px; outline: none; margin-bottom: 12px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #25d366; color: white; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .btn:hover { background: #1ebd56; }
+        #result-section { display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
+        .video-preview { width: 100%; border-radius: 10px; max-height: 280px; object-fit: cover; margin-bottom: 10px; }
+        .video-desc { font-size: 0.9rem; color: #444; margin-bottom: 12px; word-break: break-word; }
+        .quality-title { font-size: 0.9rem; color: #666; margin-bottom: 8px; font-weight: bold; }
+        .dl-btn { display: block; width: 100%; padding: 11px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: bold; color: white; margin-bottom: 8px; font-size: 0.9rem; }
         .btn-1080 { background: #22c55e; }
         .btn-720 { background: #3b82f6; }
         .btn-watermark { background: #f97316; }
         .btn-audio { background: #a855f7; }
-        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #5a6b82; }
+        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #888; }
     </style>
 </head>
 <body>
-
 <div class="card">
     <a href="/" class="back-link">&larr; Back to Home</a>
-    
     <div class="logo-container">
-        <div class="main-logo-box">
-            <img src="/logo.png" alt="Logo">
-        </div>
+        <div class="main-logo-box"><img src="/logo.png" alt="Logo"></div>
     </div>
-    <h2>TIKTOK DOWNLOADER</h2>
+    <h2>TikTok Downloader</h2>
     <p class="subtitle">Download in 1080p, 720p & MP3 Without Watermark</p>
-
     <input type="text" id="tiktok-url" class="input-field" placeholder="Paste TikTok Link Here...">
     <button class="btn" onclick="downloadTikTok()">Download Now</button>
-
     <div id="result-section">
         <video id="vid-preview" class="video-preview" controls></video>
         <p id="vid-desc" class="video-desc"></p>
         <p class="quality-title">Select Quality to Download:</p>
-
         <a id="dl-1080" href="#" target="_blank" class="dl-btn btn-1080">Download 1080p Full HD (No Watermark)</a>
         <a id="dl-720" href="#" target="_blank" class="dl-btn btn-720">Download 720p HD (No Watermark)</a>
         <a id="dl-watermark" href="#" target="_blank" class="dl-btn btn-watermark">Download Watermark Video</a>
         <a id="dl-audio" href="#" target="_blank" class="dl-btn btn-audio">Download Audio (MP3)</a>
     </div>
-
     <div class="footer">© Powered by Dilshan</div>
 </div>
-
 <script>
 async function downloadTikTok() {
     const url = document.getElementById('tiktok-url').value.trim();
