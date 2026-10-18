@@ -10,20 +10,19 @@ app.use(express.json());
 
 // Memory-based visitor storage
 let visitorLogs = [];
+// Temporary store for visitor names by IP/Session
+let visitorNames = {};
 
-// Helper function to capture and save visitor details with Location
+// Helper function to capture visitor details
 function logVisitor(req, pageName) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
     if (ip.includes(',')) ip = ip.split(',')[0].trim();
     
-    // Default location
     let locationStr = "Unknown Location";
-
     if (ip === '::1' || ip === '127.0.0.1' || ip.startsWith('192.168.')) {
         ip = 'Localhost (You)';
         locationStr = 'Local Network';
     } else {
-        // Fetch Location from IP
         let geo = geoip.lookup(ip);
         if (geo) {
             let country = geo.country || '';
@@ -40,8 +39,11 @@ function logVisitor(req, pageName) {
         deviceName = 'Samsung Galaxy A14 (Mobile)';
     }
 
+    let visitorName = visitorNames[ip] || 'Guest / Unnamed';
+
     visitorLogs.unshift({
         time: new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }),
+        name: visitorName,
         ip: ip,
         location: locationStr,
         device: deviceName,
@@ -51,16 +53,44 @@ function logVisitor(req, pageName) {
     if (visitorLogs.length > 100) visitorLogs.pop();
 }
 
-// Explicit route for Home Page to capture visits 100%
+// Endpoint to receive visitor's entered name
+app.post('/api/set-name', (req, res) => {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    if (ip.includes(',')) ip = ip.split(',')[0].trim();
+    
+    const { name } = req.body;
+    if (name) {
+        visitorNames[ip] = name;
+        // Update latest log name if exists for this IP
+        for (let log of visitorLogs) {
+            if (log.ip === ip) {
+                log.name = name;
+                break;
+            }
+        }
+    }
+    res.json({ success: true });
+});
+
+// Routes
 app.get('/', (req, res) => {
     logVisitor(req, 'Home Page (/)');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Explicit route for other main pages
+// PWA Service Worker script
+app.get('/sw.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => self.clients.claim());
+        self.addEventListener('fetch', (e) => {});
+    `);
+});
+
 app.get('/:page', (req, res, next) => {
     const page = req.params.page;
-    if (page === 'api' || page === 'admin-dashboard-secret') {
+    if (page === 'api' || page === 'admin-dashboard-secret' || page === 'sw.js') {
         return next();
     }
     const filePath = path.join(__dirname, 'public', page);
@@ -72,7 +102,6 @@ app.get('/:page', (req, res, next) => {
     }
 });
 
-// Serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Protected Admin API
@@ -90,7 +119,7 @@ app.post('/api/admin-stats', (req, res) => {
     });
 });
 
-// Secret Admin Dashboard App Route with Location Column
+// Secret Admin Dashboard Mobile App with Name display
 app.get('/admin-dashboard-secret', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -102,7 +131,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
             <link rel="icon" type="image/svg+xml" href="/logo.svg">
             <link rel="manifest" href="data:application/manifest+json,${encodeURIComponent(JSON.stringify({
                 name: "Dilshan Admin Panel",
-                short_name: "Admin Panel",
+                short_name: "Admin App",
                 start_url: "/admin-dashboard-secret",
                 display: "standalone",
                 background_color: "#030712",
@@ -115,51 +144,59 @@ app.get('/admin-dashboard-secret', (req, res) => {
             }))}">
             <meta name="theme-color" content="#00f0ff">
             <style>
-                * { box-sizing: border-box; }
-                body { background: #030712; color: #00f0ff; font-family: 'Segoe UI', monospace; padding: 15px; margin: 0; }
-                h1 { text-align: center; text-shadow: 0 0 10px #00f0ff; font-size: 1.3rem; margin-top: 10px; text-transform: uppercase; }
-                .install-btn { display: none; margin: 10px auto; width: 100%; max-width: 400px; padding: 12px; background: #00f0ff; color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px #00f0ff; font-size: 14px; text-transform: uppercase; }
-                .login-box, .dashboard { max-width: 900px; margin: 20px auto; background: #081028; border: 1px solid #00f0ff; padding: 20px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,240,255,0.3); }
-                input, button { padding: 12px; margin: 8px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 6px; width: 100%; font-size: 14px; outline: none; }
-                button { background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-                .table-container { overflow-x: auto; margin-top: 15px; }
-                table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                th, td { border: 1px solid #0a4f8a; padding: 8px; text-align: left; word-break: break-all; }
-                th { background: #050b18; color: #00f0ff; }
-                tr:hover { background: rgba(0,240,255,0.1); }
+                * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+                body { background: #030712; color: #ffffff; padding: 15px; min-height: 100vh; }
+                header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #0a4f8a; padding-bottom: 10px; }
+                header h1 { color: #00f0ff; font-size: 1.4rem; text-shadow: 0 0 10px #00f0ff; text-transform: uppercase; }
+                
+                .install-btn { display: none; width: 100%; max-width: 450px; margin: 0 auto 15px auto; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 0 20px rgba(0,240,255,0.6); font-size: 15px; text-transform: uppercase; }
+                
+                .container { max-width: 500px; margin: 0 auto; }
+                .login-card { background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; }
+                input { width: 100%; padding: 14px; margin: 15px 0; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; font-size: 16px; outline: none; text-align: center; }
+                .btn { width: 100%; padding: 14px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-transform: uppercase; }
+                
+                .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+                .refresh-btn { padding: 8px 16px; background: #00f0ff; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+                
+                .visitor-card { background: #081028; border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 0 15px rgba(0,240,255,0.15); position: relative; }
+                .visitor-card .time-stamp { font-size: 11px; color: #8ab4f8; position: absolute; top: 12px; right: 15px; }
+                .visitor-card .name-tag { font-size: 16px; font-weight: bold; color: #00ffcc; margin-bottom: 4px; }
+                .visitor-card .ip-tag { font-size: 13px; color: #ff0055; margin-bottom: 6px; word-break: break-all; }
+                .info-row { font-size: 13px; color: #e2e8f0; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+                .info-row span { color: #00f0ff; font-weight: bold; }
+                .no-logs { text-align: center; padding: 20px; color: #8ab4f8; font-size: 14px; }
             </style>
         </head>
         <body>
-            <h1>CHAMIDU'S ADMIN APP</h1>
-            <button id="installAppBtn" class="install-btn">📲 INSTALL ADMIN APP TO PHONE</button>
-            
-            <div id="loginSection" class="login-box">
-                <h3 style="margin-bottom:10px; color:#8ab4f8;">Enter Admin Password:</h3>
-                <input type="password" id="passInput" placeholder="Enter password...">
-                <button onclick="fetchLogs()">Login to Live Stats</button>
-            </div>
-            
-            <div id="dashSection" class="dashboard" style="display:none;">
-                <h3 style="color:#00f0ff; margin-bottom:10px;">Live Visitors Log (Auto-refreshing 5s)</h3>
-                <button onclick="fetchLogs()" style="width:auto; padding:8px 16px; margin-bottom:10px;">Manual Refresh</button>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>IP Address</th>
-                                <th>Location</th>
-                                <th>Device Info</th>
-                                <th>Action / Activity</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logTableBody">
-                        </tbody>
-                    </table>
+            <header>
+                <h1>CHAMIDU'S ADMIN APP</h1>
+            </header>
+
+            <div class="container">
+                <button id="installAppBtn" class="install-btn">📲 INSTALL ADMIN APP TO PHONE</button>
+
+                <div id="loginSection" class="login-card">
+                    <h3 style="color:#8ab4f8;">Enter Admin Password</h3>
+                    <input type="password" id="passInput" placeholder="Password...">
+                    <button class="btn" onclick="fetchLogs()">Login to Live Stats</button>
+                </div>
+
+                <div id="dashSection" style="display:none;">
+                    <div class="dash-header">
+                        <span style="font-size:14px; color:#00f0ff;">Live Visitors Log (Auto 5s)</span>
+                        <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
+                    </div>
+                    
+                    <div id="visitorCardsContainer"></div>
                 </div>
             </div>
 
             <script>
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js');
+                }
+
                 let deferredPrompt;
                 let savedPassword = '';
                 const installBtn = document.getElementById('installAppBtn');
@@ -196,21 +233,25 @@ app.get('/admin-dashboard-secret', (req, res) => {
                             document.getElementById('loginSection').style.display = 'none';
                             document.getElementById('dashSection').style.display = 'block';
                             
-                            let html = '';
+                            const container = document.getElementById('visitorCardsContainer');
                             if (data.logs.length === 0) {
-                                html = '<tr><td colspan="5" style="text-align:center; color:#8ab4f8;">No visits recorded yet. Open main site in new tab!</td></tr>';
+                                container.innerHTML = '<div class="no-logs">No visits recorded yet. Open main site in new tab!</div>';
                             } else {
+                                let html = '';
                                 data.logs.forEach(log => {
-                                    html += \`<tr>
-                                        <td>\${log.time}</td>
-                                        <td style="color:#ff0055; font-weight:bold;">\${log.ip}</td>
-                                        <td style="color:#00f0ff; font-weight:bold;">\${log.location}</td>
-                                        <td>\${log.device}</td>
-                                        <td>\${log.action}</td>
-                                    </tr>\`;
+                                    html += \`
+                                        <div class="visitor-card">
+                                            <div class="time-stamp">\${log.time}</div>
+                                            <div class="name-tag">👤 \${log.name}</div>
+                                            <div class="ip-tag">IP: \${log.ip}</div>
+                                            <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
+                                            <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
+                                            <div class="info-row">⚡ <span>Action:</span> \${log.action}</div>
+                                        </div>
+                                    \`;
                                 });
+                                container.innerHTML = html;
                             }
-                            document.getElementById('logTableBody').innerHTML = html;
                         } else {
                             alert(data.error);
                         }
