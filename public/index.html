@@ -23,13 +23,18 @@
         }
 
         header, .container, .footer { z-index: 1; position: relative; }
-        header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        header { text-align: center; margin-bottom: 20px; margin-top: 10px; width: 100%; max-width: 450px; }
+        
+        .user-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; background: #081028; border: 1px solid #00f0ff; padding: 10px 15px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+        .user-top-bar span { font-size: 0.9rem; color: #00ffcc; font-weight: bold; }
+        .logout-btn { padding: 6px 12px; background: #ff0055; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
+
         .logo-box {
-            width: 100px; height: 100px; border-radius: 50%; background: #081028;
+            width: 90px; height: 90px; border-radius: 50%; background: #081028;
             border: 2px solid #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
             display: flex; justify-content: center; align-items: center; margin: 0 auto 12px auto; overflow: hidden;
         }
-        .logo-img { width: 80px; height: 80px; object-fit: contain; }
+        .logo-img { width: 70px; height: 70px; object-fit: contain; }
         header h1 { color: #00f0ff; font-size: 1.8rem; text-shadow: 0 0 12px rgba(0, 240, 255, 0.7); margin-bottom: 5px; text-transform: uppercase; }
         header p { color: #8ab4f8; font-size: 0.9rem; }
         
@@ -162,6 +167,14 @@
             }
         }
 
+        function trackUserAction(actionName) {
+            fetch('/api/track-action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: actionName })
+            }).catch(() => {});
+        }
+
         for (let i = 0; i < 22; i++) {
             let gem = document.createElement('div');
             gem.className = 'neon-gem';
@@ -177,9 +190,12 @@
             let savedName = sessionStorage.getItem('dilshan_visitor_name');
             if (!savedName) {
                 document.getElementById('nameModal').style.display = 'flex';
+                document.getElementById('userTopBar').style.display = 'none';
             } else {
                 sendNameToSever(savedName);
                 document.getElementById('msgUsername').value = savedName;
+                document.getElementById('loggedInUserText').innerText = savedName;
+                document.getElementById('userTopBar').style.display = 'flex';
             }
         });
 
@@ -199,7 +215,16 @@
             sendNameToSever(name);
 
             document.getElementById('msgUsername').value = name;
+            document.getElementById('loggedInUserText').innerText = name;
+            document.getElementById('userTopBar').style.display = 'flex';
             document.getElementById('nameModal').style.display = 'none';
+        }
+
+        function logoutUser() {
+            sessionStorage.removeItem('dilshan_visitor_name');
+            document.getElementById('visitorNameInput').value = '';
+            document.getElementById('userTopBar').style.display = 'none';
+            document.getElementById('nameModal').style.display = 'flex';
         }
 
         function sendNameToSever(name) {
@@ -251,6 +276,11 @@
     </script>
 
     <header>
+        <div id="userTopBar" class="user-top-bar" style="display:none;">
+            <span>👤 User: <span id="loggedInUserText"></span></span>
+            <button class="logout-btn" onclick="logoutUser()">🚪 Logout</button>
+        </div>
+
         <div class="logo-box">
             <img src="/logo.svg" alt="Dilshan All In One Logo" class="logo-img">
         </div>
@@ -264,31 +294,31 @@
         <div class="neon-card-border tool-card admin-tool-card">
             <h2>Admin Updates & Media</h2>
             <p>View latest announcements, images, audio, video & files shared by Admin.</p>
-            <a href="/admin-updates.html" class="btn btn-admin">Open Admin Feed</a>
+            <a href="/admin-updates.html" class="btn btn-admin" onclick="trackUserAction('Opened Admin Feed Page')">Open Admin Feed</a>
         </div>
 
         <div class="neon-card-border tool-card">
             <h2>WhatsApp Unban Tool</h2>
             <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
-            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
+            <a href="/whatsapp-unban.html" class="btn" onclick="trackUserAction('Opened WhatsApp Unban Tool')">Open Tool</a>
         </div>
         
         <div class="neon-card-border tool-card">
             <h2>QR Code Generator</h2>
             <p>Create Custom Neon QR Codes with Colors & Logo Support.</p>
-            <a href="/qr-generator.html" class="btn">Open Generator</a>
+            <a href="/qr-generator.html" class="btn" onclick="trackUserAction('Opened QR Generator Tool')">Open Generator</a>
         </div>
         
         <div class="neon-card-border tool-card">
             <h2>Password Generator</h2>
             <p>Generate Strong Custom Passwords with Prefix & Custom Options.</p>
-            <a href="/password-generator.html" class="btn">Open Generator</a>
+            <a href="/password-generator.html" class="btn" onclick="trackUserAction('Opened Password Generator Tool')">Open Generator</a>
         </div>
         
         <div class="neon-card-border tool-card">
             <h2>Media Downloader</h2>
             <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
+            <a href="/tiktok-downloader.html" class="btn" onclick="trackUserAction('Opened TikTok Downloader Tool')">Open Downloader</a>
         </div>
 
         <div class="neon-card-border contact-owner-card" style="text-align: left;">
@@ -297,7 +327,7 @@
             
             <div class="telegram-box">
                 <span>📱 Telegram: @Dilshan7878</span>
-                <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="btn-telegram">Telegram</a>
+                <a href="https://t.me/Dilshan7878?text=Hi%20Dilshan" target="_blank" class="btn-telegram" onclick="trackUserAction('Clicked Direct Telegram Link')">Telegram</a>
             </div>
 
             <input type="text" id="msgUsername" class="msg-input" placeholder="Your Username or Email...">
