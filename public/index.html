@@ -35,18 +35,6 @@
         
         .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Admin Notice & Media Board */
-        .notice-board {
-            background: rgba(8, 24, 48, 0.95); border: 1px solid #00ffcc; padding: 18px;
-            border-radius: 16px; box-shadow: 0 0 20px rgba(0, 255, 204, 0.25); display: none;
-        }
-        .notice-board h3 { color: #00ffcc; font-size: 1rem; margin-bottom: 12px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-        .notice-item { background: #030712; border-left: 3px solid #00ffcc; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #fff; }
-        .notice-item img, .notice-item video { width: 100%; border-radius: 6px; margin-top: 8px; max-height: 300px; object-fit: contain; }
-        .notice-item audio { width: 100%; margin-top: 8px; }
-        .notice-item a.file-dl-btn { display: inline-block; margin-top: 8px; padding: 8px 14px; background: #00ffcc; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 0.85rem; }
-        .notice-time { font-size: 10px; color: #8ab4f8; margin-top: 6px; display: block; }
-
         .tool-card {
             background: rgba(8, 16, 40, 0.9); border: 1px solid #00f0ff; padding: 20px;
             border-radius: 16px; box-shadow: 0 0 18px rgba(0, 240, 255, 0.25); text-align: center;
@@ -54,6 +42,15 @@
         .tool-card h2 { font-size: 1.2rem; color: #00f0ff; margin-bottom: 8px; text-transform: uppercase; }
         .tool-card p { font-size: 0.88rem; color: #b0c4de; margin-bottom: 16px; line-height: 1.4; }
         
+        /* Special Admin Tool Card Styling */
+        .admin-tool-card {
+            background: rgba(8, 24, 48, 0.95); border: 1px solid #00ffcc; box-shadow: 0 0 18px rgba(0, 255, 204, 0.3);
+        }
+        .admin-tool-card h2 { color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,204,0.5); }
+        .btn-admin {
+            background: linear-gradient(90deg, #00aa77, #00ffcc); color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.7);
+        }
+
         .btn {
             display: block; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold;
             text-decoration: none; font-size: 0.95rem; cursor: pointer; border: none;
@@ -130,7 +127,6 @@
             } else {
                 sendNameToSever(savedName);
             }
-            fetchAdminNotices();
         });
 
         function submitVisitorName() {
@@ -157,40 +153,6 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name })
             }).catch(() => {});
-        }
-
-        // Fetch Admin Notices & Media Posts
-        async function fetchAdminNotices() {
-            try {
-                let res = await fetch('/api/get-notices');
-                let data = await res.json();
-                if (data.notices && data.notices.length > 0) {
-                    let container = document.getElementById('noticesContainer');
-                    let html = '';
-                    data.notices.forEach(n => {
-                        let mediaContent = '';
-                        if (n.mediaType === 'image' && n.mediaData) {
-                            mediaContent = \`<img src="\${n.mediaData}" alt="Admin Image">\`;
-                        } else if (n.mediaType === 'audio' && n.mediaData) {
-                            mediaContent = \`<audio controls src="\${n.mediaData}"></audio>\`;
-                        } else if (n.mediaType === 'video' && n.mediaData) {
-                            mediaContent = \`<video controls src="\${n.mediaData}"></video>\`;
-                        } else if (n.mediaType === 'file' && n.mediaData) {
-                            mediaContent = \`<br><a href="\${n.mediaData}" download="Admin-File" class="file-dl-btn">📎 Download Attached File</a>\`;
-                        }
-
-                        html += \`
-                            <div class="notice-item">
-                                \${n.text ? '📢 ' + n.text : ''}
-                                \${mediaContent}
-                                <span class="notice-time">\${n.time}</span>
-                            </div>
-                        \`;
-                    });
-                    container.innerHTML = html;
-                    document.getElementById('adminNoticeBoard').style.display = 'block';
-                }
-            } catch(e) {}
         }
 
         async function sendMessageToOwner() {
@@ -242,10 +204,11 @@
     </header>
 
     <div class="container">
-        <!-- Admin Notice / Media Board -->
-        <div id="adminNoticeBoard" class="notice-board">
-            <h3>📢 Admin Announcements & Media</h3>
-            <div id="noticesContainer"></div>
+        <!-- New Admin Updates Tool Card -->
+        <div class="tool-card admin-tool-card">
+            <h2>Admin Updates & Media</h2>
+            <p>View latest announcements, images, audio, videos & files shared by Admin.</p>
+            <a href="/admin-updates.html" class="btn btn-admin">Open Admin Feed</a>
         </div>
 
         <div class="tool-card">
