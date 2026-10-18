@@ -6,50 +6,207 @@
     <title>Dilshan All In One - Utility Toolbox</title>
     <link rel="icon" type="image/png" sizes="192x192" href="/logo.png">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
-        .logo-img { width: 80px; height: 80px; border-radius: 16px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); object-fit: contain; background: #ffffff; }
-        header h1 { color: #075e54; font-size: 2rem; margin-bottom: 5px; }
-        header p { color: #666; font-size: 0.95rem; }
-        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
-        .tool-card { background: #ffffff; padding: 22px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); text-align: center; transition: transform 0.2s; }
-        .tool-card:hover { transform: translateY(-3px); }
-        .tool-card h2 { font-size: 1.25rem; color: #128c7e; margin-bottom: 10px; }
-        .tool-card p { font-size: 0.9rem; color: #555; margin-bottom: 16px; line-height: 1.4; }
-        .btn { display: inline-block; padding: 10px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 0.95rem; cursor: pointer; border: none; background-color: #25d366; color: white; }
-        .btn:hover { background-color: #1ebd56; }
-        .footer { text-align: center; margin-top: 30px; font-size: 13px; color: #888; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #030712;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Neon Blue Glowing Falling Particles / Jewels */
+        .neon-gem {
+            position: fixed;
+            background: radial-gradient(circle, #00ffff 0%, #0088ff 60%, transparent 100%);
+            box-shadow: 0 0 12px #00f0ff, 0 0 25px #0077ff, inset 0 0 5px #ffffff;
+            border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: fallAndGlow linear infinite;
+            z-index: 0;
+        }
+        @keyframes fallAndGlow {
+            0% {
+                transform: translateY(-10vh) rotate(0deg) scale(0.6);
+                opacity: 0;
+            }
+            20% { opacity: 0.9; }
+            80% { opacity: 0.9; }
+            100% {
+                transform: translateY(105vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        header, .container, .footer {
+            z-index: 1;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #081028;
+            border: 2px solid #00f0ff;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 12px auto;
+        }
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        header h1 {
+            color: #00f0ff;
+            font-size: 1.8rem;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        header p {
+            color: #8ab4f8;
+            font-size: 0.9rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .tool-card {
+            background: rgba(8, 16, 40, 0.9);
+            border: 1px solid #00f0ff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
+            text-align: center;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            border-color: #ffffff;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+            transform: translateY(-2px);
+        }
+        .tool-card h2 {
+            font-size: 1.2rem;
+            color: #00f0ff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+        }
+        .tool-card p {
+            font-size: 0.88rem;
+            color: #b0c4de;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(90deg, #0072ff, #00f0ff);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.7);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 1);
+            transform: scale(1.02);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #5a738e;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Dynamic Glowing Neon Gems Falling Effect -->
+    <script>
+        for (let i = 0; i < 22; i++) {
+            let gem = document.createElement('div');
+            gem.className = 'neon-gem';
+            let size = Math.random() * 8 + 6 + 'px'; // Gem size
+            gem.style.width = size;
+            gem.style.height = size;
+            gem.style.left = Math.random() * 100 + 'vw';
+            gem.style.animationDuration = Math.random() * 6 + 4 + 's'; // Falling speed
+            gem.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(gem);
+        }
+    </script>
+
     <header>
-        <img src="/logo.png" alt="Logo" class="logo-img">
-        <h1>Dilshan All In One</h1>
-        <p>Your ultimate utility toolbox in one place</p>
-    </header>
-    <div class="container">
-        <div class="tool-card">
-            <h2>WhatsApp Unban Tool</h2>
-            <p>Generate professional appeal emails and contact WhatsApp support instantly.</p>
-            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
+        <div class="logo-box">
+            <img src="/logo.png" alt="Logo" class="logo-img">
         </div>
+        <h1>Dilshan All In One</h1>
+        <p>Your Ultimate Cyber Utility Hub</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="tool-card">
+            <h2>Media Downloader</h2>
+            <p>Download TikTok Videos in 1080p, 720p & MP3 Without Watermark.</p>
+            <a href="/tiktok-downloader.html" class="btn">Open Downloader</a>
+        </div>
+
         <div class="tool-card">
             <h2>QR Code Generator</h2>
-            <p>Generate custom QR codes easily with custom colors & logo support.</p>
-            <a href="/qr-generator.html" class="btn">Open Tool</a>
+            <p>Create Custom Neon QR Codes with Colors & Logo Support.</p>
+            <a href="/qr-generator.html" class="btn">Open Generator</a>
         </div>
+
         <div class="tool-card">
             <h2>Password Generator</h2>
-            <p>Create secure and strong random custom passwords.</p>
-            <a href="/password-generator.html" class="btn">Open Tool</a>
+            <p>Generate Strong Custom Passwords with Prefix & Custom Options.</p>
+            <a href="/password-generator.html" class="btn">Open Generator</a>
         </div>
+
         <div class="tool-card">
-            <h2>TikTok Downloader</h2>
-            <p>Download TikTok videos in 1080p, 720p & MP3 without watermark.</p>
-            <a href="/tiktok-downloader.html" class="btn">Open Tool</a>
+            <h2>WhatsApp Unban Tool</h2>
+            <p>Generate Official Appeal Emails to Unban WhatsApp Numbers Fast.</p>
+            <a href="/whatsapp-unban.html" class="btn">Open Tool</a>
         </div>
+
     </div>
-    <div class="footer">© Powered by Dilshan</div>
+
+    <div class="footer">
+        © Powered by Dilshan
+    </div>
+
 </body>
 </html>
