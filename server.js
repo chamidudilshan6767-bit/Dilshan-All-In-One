@@ -259,7 +259,7 @@ app.get('/admin-dashboard-secret', (req, res) => {
 
                 <div id="dashSection" style="display:none;">
                     <div class="dash-header">
-                        <span style="font-size:14px; color:#00f0ff;">Live Dashboard (Auto 5s)</span>
+                        <span style="font-size:14px; color:#00f0ff;">Live Dashboard (Auto 10s)</span>
                         <button class="refresh-btn" onclick="fetchLogs()">Refresh</button>
                     </div>
 
@@ -502,11 +502,12 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     }
                 }
 
+                // දැන් auto refresh වෙන්නේ තත්පර 10න් 10ටයි (10000ms)
                 setInterval(() => {
                     if(document.getElementById('dashSection').style.display === 'block') {
                         fetchLogs();
                     }
-                }, 5000);
+                }, 10000);
             </script>
         </body>
         </html>
