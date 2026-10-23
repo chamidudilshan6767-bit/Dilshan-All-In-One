@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Status Saver - Dilshan All In One</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <meta name="theme-color" content="#00f0ff">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; margin-top: 20px; }
+        h1 { color: #00f0ff; font-size: 1.5rem; margin-bottom: 10px; text-transform: uppercase; }
+        p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 20px; }
+        input[type="file"] { width: 100%; padding: 12px; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; margin-bottom: 15px; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 0.95rem; text-decoration: none; display: inline-block; margin-top: 10px; }
+        .preview-area { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .preview-item { width: 100%; margin-bottom: 15px; }
+        .preview-area img, .preview-area video { width: 100%; max-height: 250px; border-radius: 8px; object-fit: contain; background: #000; margin-bottom: 8px; }
+        .back-link { display: block; margin-top: 20px; color: #00f0ff; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Status Saver</h1>
+        <p>Select WhatsApp status media files to preview and download instantly.</p>
+        <input type="file" id="statusFile" accept="image/*,video/*" multiple>
+        <div id="preview" class="preview-area"></div>
+        <a href="/" class="back-link">← Back to Home Hub</a>
+    </div>
+    <script>
+        document.getElementById('statusFile').addEventListener('change', function(e) {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            Array.from(e.target.files).forEach(file => {
+                const url = URL.createObjectURL(file);
+                let container = document.createElement('div');
+                container.className = 'preview-item';
+                
+                let el;
+                if(file.type.startsWith('video')) {
+                    el = document.createElement('video');
+                    el.src = url;
+                    el.controls = true;
+                } else {
+                    el = document.createElement('img');
+                    el.src = url;
+                }
+                container.appendChild(el);
+
+                let dlBtn = document.createElement('ahref');
+                let btn = document.createElement('a');
+                btn.href = url;
+                btn.download = file.name || 'status-media';
+                btn.className = 'btn';
+                btn.innerText = 'Download File';
+                btn.style.display = 'block';
+                btn.style.textAlign = 'center';
+                container.appendChild(btn);
+
+                preview.appendChild(container);
+            });
+        });
+    </script>
+</body>
+</html>
