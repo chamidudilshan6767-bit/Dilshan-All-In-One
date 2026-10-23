@@ -137,6 +137,21 @@ app.get('/tiktok-downloader.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'tiktok-downloader.html'));
 });
 
+app.get('/whatsapp-status-saver.html', (req, res) => {
+    logVisitor(req, 'Visited: WhatsApp Status Saver Tool');
+    res.sendFile(path.join(__dirname, 'public', 'whatsapp-status-saver.html'));
+});
+
+app.get('/whatsapp-dp-downloader.html', (req, res) => {
+    logVisitor(req, 'Visited: WhatsApp DP Downloader Tool');
+    res.sendFile(path.join(__dirname, 'public', 'whatsapp-dp-downloader.html'));
+});
+
+app.get('/photo-to-pdf.html', (req, res) => {
+    logVisitor(req, 'Visited: Photo to PDF Converter Tool');
+    res.sendFile(path.join(__dirname, 'public', 'photo-to-pdf.html'));
+});
+
 app.get('/admin-updates.html', (req, res) => {
     logVisitor(req, 'Visited: Admin Updates Page');
     res.sendFile(path.join(__dirname, 'public', 'admin-updates.html'));
@@ -502,7 +517,6 @@ app.get('/admin-dashboard-secret', (req, res) => {
                     }
                 }
 
-                // දැන් auto refresh වෙන්නේ තත්පර 10න් 10ටයි (10000ms)
                 setInterval(() => {
                     if(document.getElementById('dashSection').style.display === 'block') {
                         fetchLogs();
