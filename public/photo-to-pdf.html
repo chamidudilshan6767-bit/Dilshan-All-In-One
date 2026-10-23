@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo to PDF Converter - Dilshan All In One</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <meta name="theme-color" content="#00f0ff">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; margin-top: 20px; }
+        h1 { color: #00f0ff; font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; }
+        p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 20px; }
+        input[type="file"] { width: 100%; padding: 12px; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; margin-bottom: 15px; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #00aa77, #00ffcc); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 0.95rem; }
+        .back-link { display: block; margin-top: 20px; color: #00f0ff; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Photo to PDF</h1>
+        <p>Select multiple images to convert them into a single PDF document.</p>
+        <input type="file" id="imageFiles" accept="image/*" multiple>
+        <button class="btn" onclick="convertToPdf()">Convert & Download PDF</button>
+        <a href="/" class="back-link">← Back to Home Hub</a>
+    </div>
+    <script>
+        async function convertToPdf() {
+            const fileInput = document.getElementById('imageFiles');
+            if(fileInput.files.length === 0) {
+                alert("Please select at least one image!");
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            for(let i=0; i<fileInput.files.length; i++) {
+                let file = fileInput.files[i];
+                let base64 = await toBase64(file);
+                if(i > 0) doc.addPage();
+                doc.addImage(base64, 'JPEG', 15, 15, 180, 250);
+            }
+            doc.save('dilshan-converted.pdf');
+        }
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
+</body>
+</html>
