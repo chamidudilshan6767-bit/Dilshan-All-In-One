@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp DP Downloader - Dilshan All In One</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <meta name="theme-color" content="#00f0ff">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #030712; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; background: #081028; border: 1px solid #00f0ff; padding: 25px; border-radius: 16px; box-shadow: 0 0 20px rgba(0,240,255,0.3); text-align: center; margin-top: 20px; }
+        h1 { color: #00f0ff; font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; }
+        p { color: #8ab4f8; font-size: 0.9rem; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; background: #030712; border: 1px solid #00f0ff; color: #fff; border-radius: 8px; margin-bottom: 15px; outline: none; text-align: center; font-size: 1rem; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #0072ff, #00f0ff); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 0.95rem; }
+        .result-box { margin-top: 20px; display: none; }
+        .result-box img { width: 150px; height: 150px; border-radius: 50%; border: 2px solid #00ffcc; object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
+        .back-link { display: block; margin-top: 20px; color: #00f0ff; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp DP Downloader</h1>
+        <p>Enter phone number with country code (e.g. +947xxxxxxxx)</p>
+        <input type="text" id="phoneInput" placeholder="+947XXXXXXXX">
+        <button class="btn" onclick="fetchDp()">Fetch Profile Picture</button>
+        
+        <div id="resultBox" class="result-box">
+            <img id="dpImage" src="" alt="Profile Picture">
+            <a id="downloadDpBtn" href="" target="_blank" class="btn" style="background: linear-gradient(90deg, #00aa77, #00ffcc); text-decoration:none;">Download DP</a>
+        </div>
+
+        <a href="/" class="back-link">← Back to Home Hub</a>
+    </div>
+
+    <script>
+        function fetchDp() {
+            let phone = document.getElementById('phoneInput').value.trim();
+            if(!phone) {
+                alert("Please enter a valid phone number!");
+                return;
+            }
+            // Mock display for demonstration / API placeholder
+            let resultBox = document.getElementById('resultBox');
+            let dpImage = document.getElementById('dpImage');
+            let downloadDpBtn = document.getElementById('downloadDpBtn');
+            
+            // Using placeholder avatar or direct wa link generation logic
+            dpImage.src = "https://via.placeholder.com/150/081028/00f0ff?text=WhatsApp+DP";
+            downloadDpBtn.href = dpImage.src;
+            resultBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
